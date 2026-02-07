@@ -2,7 +2,7 @@
   "title": "The Blue-Green Bridge",
   "description": "Implement zero-downtime blue-green deployments with Service selector switching",
   "details": {
-    "intro": { "text": "intro.md" },
+    "intro": { "text": "intro.md", "background": "setup.sh" },
     "steps": [
       { "title": "Deploy Blue Version", "text": "step1.md", "verify": "step1-verify.sh" },
       { "title": "Deploy Green Version", "text": "step2.md", "verify": "step2-verify.sh" },

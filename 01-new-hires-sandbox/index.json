@@ -3,7 +3,8 @@
   "description": "Create a development namespace with resource controls for a new team member",
   "details": {
     "intro": {
-      "text": "intro.md"
+      "text": "intro.md",
+      "background": "setup.sh"
     },
     "steps": [
       {

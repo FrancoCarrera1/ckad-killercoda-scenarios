@@ -2,7 +2,7 @@
   "title": "The Resilient Worker",
   "description": "Build fault-tolerant batch processing with Indexed Jobs and automatic cleanup",
   "details": {
-    "intro": { "text": "intro.md" },
+    "intro": { "text": "intro.md", "background": "setup.sh" },
     "steps": [
       { "title": "Create Indexed Job for Parallel Processing", "text": "step1.md", "verify": "step1-verify.sh" },
       { "title": "Build Job with Retry Logic", "text": "step2.md", "verify": "step2-verify.sh" },

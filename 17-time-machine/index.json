@@ -2,7 +2,7 @@
   "title": "The Time Machine",
   "description": "Rescue a broken deployment with rollback techniques",
   "details": {
-    "intro": { "text": "intro.md" },
+    "intro": { "text": "intro.md", "background": "setup.sh" },
     "steps": [
       { "title": "Diagnose the Broken Deployment", "text": "step1.md", "verify": "step1-verify.sh" },
       { "title": "Roll Back to Previous Version", "text": "step2.md", "verify": "step2-verify.sh" },

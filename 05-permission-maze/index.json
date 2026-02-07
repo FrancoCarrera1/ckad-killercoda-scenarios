@@ -2,7 +2,7 @@
   "title": "The Permission Maze",
   "description": "Debug a broken RBAC chain with three hidden bugs",
   "details": {
-    "intro": { "text": "intro.md" },
+    "intro": { "text": "intro.md", "background": "setup.sh" },
     "steps": [
       { "title": "Identify RBAC Bugs with auth can-i", "text": "step1.md", "verify": "step1-verify.sh" },
       { "title": "Fix the RoleBinding Subject", "text": "step2.md", "verify": "step2-verify.sh" },

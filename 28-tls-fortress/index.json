@@ -2,7 +2,7 @@
   "title": "The TLS Fortress",
   "description": "Secure Ingress traffic with TLS certificates",
   "details": {
-    "intro": { "text": "intro.md" },
+    "intro": { "text": "intro.md", "background": "setup.sh" },
     "steps": [
       { "title": "Step 1: Generate Certificate and Create TLS Secret", "text": "step1.md", "verify": "step1-verify.sh" },
       { "title": "Step 2: Create TLS-Enabled Ingress", "text": "step2.md", "verify": "step2-verify.sh" },

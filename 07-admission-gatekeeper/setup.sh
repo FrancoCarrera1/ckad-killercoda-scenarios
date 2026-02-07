@@ -1,42 +1,24 @@
 #!/bin/bash
 set -euo pipefail
 
-# Create namespace
-kubectl create namespace controlled
+# Create namespaces
+kubectl create namespace limitrange-lab
+kubectl create namespace quota-lab
 
-# Create ResourceQuota
-cat <<EOF | kubectl apply -f -
-apiVersion: v1
-kind: ResourceQuota
-metadata:
-  name: compute-quota
-  namespace: controlled
-spec:
-  hard:
-    requests.cpu: "2"
-    requests.memory: 2Gi
-    pods: "5"
-EOF
+# Create pods in limitrange-lab with NO resource requests/limits
+for i in 1 2 3; do
+  kubectl run app-$i --image=nginx:1.24 -n limitrange-lab
+done
 
-# Create LimitRange
-cat <<EOF | kubectl apply -f -
-apiVersion: v1
-kind: LimitRange
-metadata:
-  name: compute-limits
-  namespace: controlled
-spec:
-  limits:
-  - max:
-      cpu: 256m
-      memory: 256Mi
-    default:
-      cpu: 100m
-      memory: 128Mi
-    defaultRequest:
-      cpu: 100m
-      memory: 128Mi
-    type: Container
-EOF
+# Create pods in quota-lab with NO resource requests/limits
+for i in 1 2 3; do
+  kubectl run app-$i --image=nginx:1.24 -n quota-lab
+done
 
-echo "Setup complete! Namespace 'controlled' has been created with ResourceQuota and LimitRange."
+# Wait for all pods to be running
+kubectl wait --for=condition=Ready pods --all -n limitrange-lab --timeout=120s
+kubectl wait --for=condition=Ready pods --all -n quota-lab --timeout=120s
+
+echo "Setup complete!"
+echo "- limitrange-lab: 3 pods running (no resource requests/limits)"
+echo "- quota-lab: 3 pods running (no resource requests/limits)"

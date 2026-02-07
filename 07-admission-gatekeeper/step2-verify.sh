@@ -1,23 +1,42 @@
 #!/bin/bash
 set -euo pipefail
 
-# Count pods in the controlled namespace
-POD_COUNT=$(kubectl get pods -n controlled --no-headers 2>/dev/null | wc -l)
-
-if [ "$POD_COUNT" -ne 5 ]; then
-  echo "Expected exactly 5 pods in the controlled namespace, found $POD_COUNT"
-  echo "Create pods pod-1 through pod-5, and the 6th should be rejected by ResourceQuota"
+# Check if ResourceQuota exists
+if ! kubectl get resourcequota compute-quota -n quota-lab &>/dev/null; then
+  echo "ResourceQuota 'compute-quota' not found in quota-lab namespace"
   exit 1
 fi
 
-# Verify the pods are the expected ones
-EXPECTED_PODS="pod-1 pod-2 pod-3 pod-4 pod-5"
-for POD in $EXPECTED_PODS; do
-  if ! kubectl get pod $POD -n controlled &>/dev/null; then
-    echo "Expected pod $POD not found in controlled namespace"
+# Check if LimitRange exists
+if ! kubectl get limitrange compute-limits -n quota-lab &>/dev/null; then
+  echo "LimitRange 'compute-limits' not found in quota-lab namespace"
+  echo "You need a LimitRange to provide default resources so new pods aren't rejected by the quota"
+  exit 1
+fi
+
+# Check that all 3 pods exist
+for i in 1 2 3; do
+  if ! kubectl get pod app-$i -n quota-lab &>/dev/null; then
+    echo "Pod 'app-$i' not found in quota-lab namespace"
     exit 1
   fi
 done
 
-echo "Success: Exactly 5 pods exist, demonstrating ResourceQuota enforcement"
+# Check that pods have resource requests (meaning they were recreated)
+CPU_REQUEST=$(kubectl get pod app-1 -n quota-lab -o jsonpath='{.spec.containers[0].resources.requests.cpu}' 2>/dev/null || echo "")
+
+if [ -z "$CPU_REQUEST" ]; then
+  echo "Pod 'app-1' has no CPU request. Did you recreate the pods after creating the LimitRange?"
+  echo "Delete the pods and recreate them so resources are tracked by the quota."
+  exit 1
+fi
+
+# Verify quota is tracking usage
+USED_PODS=$(kubectl get resourcequota compute-quota -n quota-lab -o jsonpath='{.status.used.pods}' 2>/dev/null || echo "0")
+if [ "$USED_PODS" -lt 3 ]; then
+  echo "ResourceQuota shows $USED_PODS pods used, expected at least 3"
+  exit 1
+fi
+
+echo "Success: ResourceQuota and LimitRange configured, pods have resources and quota is tracking usage"
 exit 0

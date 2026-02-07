@@ -2,7 +2,7 @@
   "title": "The Fortress",
   "description": "Enforce Pod Security Standards across namespaces",
   "details": {
-    "intro": { "text": "intro.md" },
+    "intro": { "text": "intro.md", "background": "setup.sh" },
     "steps": [
       { "title": "Label Namespaces with Pod Security Standards", "text": "step1.md", "verify": "step1-verify.sh" },
       { "title": "Deploy a Restricted-Compliant Pod", "text": "step2.md", "verify": "step2-verify.sh" },

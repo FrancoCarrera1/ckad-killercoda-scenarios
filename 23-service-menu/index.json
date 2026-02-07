@@ -2,7 +2,7 @@
   "title": "The Service Menu",
   "description": "Create and test all Kubernetes service types in one namespace",
   "details": {
-    "intro": { "text": "intro.md" },
+    "intro": { "text": "intro.md", "background": "setup.sh" },
     "steps": [
       { "title": "Create ClusterIP Service", "text": "step1.md", "verify": "step1-verify.sh" },
       { "title": "Create NodePort Service", "text": "step2.md", "verify": "step2-verify.sh" },

@@ -2,7 +2,7 @@
   "title": "The Application Autopsy",
   "description": "Debug a cascading multi-tier application failure",
   "details": {
-    "intro": { "text": "intro.md" },
+    "intro": { "text": "intro.md", "background": "setup.sh" },
     "steps": [
       { "title": "Step 1: Fix the Database Layer", "text": "step1.md", "verify": "step1-verify.sh" },
       { "title": "Step 2: Fix the Backend Layer", "text": "step2.md", "verify": "step2-verify.sh" },

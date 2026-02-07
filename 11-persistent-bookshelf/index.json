@@ -2,7 +2,7 @@
   "title": "The Persistent Bookshelf",
   "description": "Build the complete storage chain: StorageClass → PV → PVC → Pod",
   "details": {
-    "intro": { "text": "intro.md" },
+    "intro": { "text": "intro.md", "background": "setup.sh" },
     "steps": [
       { "title": "Create Storage Resources", "text": "step1.md", "verify": "step1-verify.sh" },
       { "title": "Deploy Application with PVC", "text": "step2.md", "verify": "step2-verify.sh" },

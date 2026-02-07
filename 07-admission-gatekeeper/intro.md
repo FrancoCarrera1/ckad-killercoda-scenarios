@@ -1,39 +1,42 @@
 # The Admission Gatekeeper
 
-Welcome to The Admission Gatekeeper! Admission controllers are the bouncers of your Kubernetes cluster. They intercept requests to the API server and can validate, mutate, or reject them before objects are persisted.
+Welcome to The Admission Gatekeeper! In this scenario, you'll learn how to use **LimitRange** and **ResourceQuota** to control resource usage in your Kubernetes cluster.
 
-## The Challenge
+## The Situation
 
-In this scenario, you'll explore how admission controllers work together to enforce resource policies and prevent runaway workloads. You'll work with:
+Your cluster has two namespaces, each running application pods with **no resource requests or limits** configured. This is a problem — without resource constraints, a single pod could consume all available node resources and starve other workloads.
 
-- **Admission Controllers**: The built-in gatekeepers
-- **LimitRange**: Sets limits on resource requests per pod/container
-- **ResourceQuota**: Sets aggregate limits on resources in a namespace
+Your job is to lock things down:
 
-## Admission Controller Flow
+- **`limitrange-lab`**: Configure per-container resource defaults and boundaries using a LimitRange
+- **`quota-lab`**: Configure namespace-level resource caps using a ResourceQuota
 
-When you create a pod, the request flows through multiple admission controllers:
+## What Are LimitRange and ResourceQuota?
 
-1. **MutatingAdmissionWebhook**: Can modify the request
-2. **LimitRanger**: Applies default limits and validates against LimitRange
-3. **ResourceQuota**: Validates against namespace quotas
-4. **PodSecurity**: Validates against Pod Security Standards
-5. **ValidatingAdmissionWebhook**: Final validation (can't modify)
+### LimitRange
+A **LimitRange** sets resource constraints at the **individual container/pod level**:
+- **Default requests/limits**: Automatically injected into containers that don't specify their own
+- **Min/Max boundaries**: Reject pods whose requests fall outside the allowed range
+- Enforced by the **LimitRanger** admission controller at pod creation time
 
-If any admission controller rejects the request, the object is not created.
+### ResourceQuota
+A **ResourceQuota** sets resource constraints at the **namespace level**:
+- **Aggregate caps**: Total CPU, memory, and pod count across all pods in the namespace
+- **Enforcement**: New pods that would push usage over the quota are rejected
+- When a CPU/memory quota exists, **every new pod must specify resource requests/limits** or it will be rejected with a 403 error
+
+### Key Behavior
+- LimitRange defaults are only applied when a pod is **created** — they are **not** retroactively applied to already-running pods
+- Existing pods continue running even after a ResourceQuota is added, but new pods must comply
 
 ## Learning Objectives
 
 By the end of this scenario, you will be able to:
 
-- Identify which admission controllers are enabled in your cluster
-- Understand how LimitRange enforces per-pod constraints
-- Understand how ResourceQuota enforces namespace-level constraints
-- Calculate remaining quota headroom
-- Create deployments that fit within available resources
+- Create a LimitRange with default requests, limits, and min/max boundaries
+- Create a ResourceQuota with CPU, memory, and pod count limits
+- Understand that LimitRange defaults only apply at pod admission time
+- Update existing pods to comply with new resource policies
+- Test and observe rejection behavior for both LimitRange and ResourceQuota
 
-## Challenge Level
-
-**Hard** - This scenario requires understanding resource management, quotas, and how to work within constraints.
-
-Let's meet the gatekeepers!
+Let's get started!

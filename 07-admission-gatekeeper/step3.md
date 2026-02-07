@@ -1,165 +1,125 @@
-# Step 3: Deploy Within Quota Headroom
+# Step 3: Test Enforcement
 
-Now that you understand the constraints, let's work within them! You need to calculate the remaining quota headroom and deploy a multi-replica application.
-
-## The Situation
-
-- **Current state**: 5 pods exist, each using the default 100m CPU (from LimitRange)
-- **Total CPU used**: 5 × 100m = 500m
-- **Namespace quota**: 2000m (2 CPU)
-- **Remaining headroom**: 2000m - 500m = 1500m
+Now that both namespaces are configured, let's test that the constraints are actually enforced.
 
 ## Your Task
 
-Create a Deployment named `efficient-app` in the `controlled` namespace with:
+### Test 1: LimitRange Max Rejection
 
-1. **3 replicas**
-2. **Container**:
-   - Name: `app`
-   - Image: `nginx:1.24`
-   - CPU request: `200m`
-   - Memory request: `64Mi`
+In the `limitrange-lab` namespace, try to create a pod that **exceeds the LimitRange max**:
 
-3. **Verify it fits**:
-   - 3 replicas × 200m CPU = 600m
-   - Total would be: 500m (existing) + 600m (new) = 1100m
-   - This is under the 2000m quota ✓
-   - Each pod requests 64Mi (under the 256Mi LimitRange max) ✓
+- Pod name: `too-big`
+- Image: `nginx:1.24`
+- Memory request: `512Mi` (exceeds the 256Mi max)
 
-But wait! We have 5 pods already, and the quota allows max 5 pods. What do we do?
+This should be **rejected** by the LimitRanger admission controller.
 
-## The Catch
+### Test 2: ResourceQuota Pod Limit
 
-The pod quota is 5, and you already have 5 pods. You need to:
+In the `quota-lab` namespace, create additional pods until you hit the pod count limit:
 
-1. **Delete some existing pods** to make room (delete pod-4 and pod-5)
-2. **Create the Deployment** with 3 replicas
-3. **Verify** all 3 replicas are running
+1. First, check how many pods are currently running and what the pod limit is
+2. Create pods (named `extra-1`, `extra-2`, `extra-3`) until the quota is reached
+3. Try to create one more pod — it should be **rejected** by the ResourceQuota
+
+### Test 3: ResourceQuota CPU Limit
+
+In the `quota-lab` namespace, try to create a pod with a **large CPU request** that would exceed the quota:
+
+- Pod name: `cpu-hungry`
+- Image: `nginx:1.24`
+- CPU request: `800m`
+
+Check whether this is accepted or rejected based on the remaining CPU headroom.
+
+### Verification
+
+After testing, save the LimitRange description to `/root/limitrange-output.txt` and the ResourceQuota description to `/root/quota-output.txt`:
+
+```bash
+kubectl describe limitrange compute-limits -n limitrange-lab > /root/limitrange-output.txt
+kubectl describe resourcequota compute-quota -n quota-lab > /root/quota-output.txt
+```
 
 <details><summary>Hint</summary>
 
-To check current quota usage:
+Test LimitRange max:
 ```bash
-kubectl describe resourcequota compute-quota -n controlled
+kubectl run too-big --image=nginx:1.24 -n limitrange-lab --requests='memory=512Mi'
+# Should fail with: maximum memory usage per Container is 256Mi
 ```
 
-To delete pods:
+Check quota usage:
 ```bash
-kubectl delete pod pod-4 pod-5 -n controlled
+kubectl describe resourcequota compute-quota -n quota-lab
 ```
 
-To create the deployment:
+Create extra pods:
 ```bash
-kubectl create deployment efficient-app --image=nginx:1.24 --replicas=3 -n controlled
+kubectl run extra-1 --image=nginx:1.24 -n quota-lab
+kubectl run extra-2 --image=nginx:1.24 -n quota-lab
+kubectl run extra-3 --image=nginx:1.24 -n quota-lab
 ```
 
-Then set the resource requests:
+Test CPU limit:
 ```bash
-kubectl set resources deployment efficient-app -n controlled \
-  --requests=cpu=200m,memory=64Mi
+kubectl run cpu-hungry --image=nginx:1.24 -n quota-lab --requests='cpu=800m' --limits='cpu=800m'
 ```
-
-Or create via YAML for precise control.
 
 </details>
 
 <details><summary>Solution</summary>
 
 ```bash
-# Check current quota usage
-kubectl describe resourcequota compute-quota -n controlled
+# Test 1: LimitRange max rejection
+kubectl run too-big --image=nginx:1.24 -n limitrange-lab --requests='memory=512Mi' 2>&1 || true
+# Error: maximum memory usage per Container is 256Mi, but request is 512Mi
 
-# Current state: 5 pods using 500m CPU total
+# Test 2: ResourceQuota pod limit
+# Check current usage
+kubectl describe resourcequota compute-quota -n quota-lab
 
-# Delete 2 pods to make room for the 3-replica deployment
-kubectl delete pod pod-4 pod-5 -n controlled
+# Create pods until we hit the limit (quota is 6 pods, we have 3)
+kubectl run extra-1 --image=nginx:1.24 -n quota-lab
+kubectl run extra-2 --image=nginx:1.24 -n quota-lab
+kubectl run extra-3 --image=nginx:1.24 -n quota-lab
 
-# Now we have 3 pods, allowing us to add 3 more (Deployment replicas)
+# Now we have 6 pods — try to create a 7th
+kubectl run extra-4 --image=nginx:1.24 -n quota-lab 2>&1 || true
+# Error: exceeded quota: compute-quota, requested: pods=1, used: pods=6, limited: pods=6
 
-# Method 1: Create deployment and set resources
-kubectl create deployment efficient-app --image=nginx:1.24 --replicas=3 -n controlled
+# Test 3: ResourceQuota CPU limit
+# Current usage: 6 pods × 100m = 600m requests, quota is 1000m
+# 800m would bring total to 1400m, but we're already at pod limit
+# If we delete a pod first to make room:
+kubectl delete pod extra-3 -n quota-lab
+kubectl run cpu-hungry --image=nginx:1.24 -n quota-lab --requests='cpu=800m' --limits='cpu=800m' 2>&1 || true
+# Error: exceeded quota: compute-quota, requested: requests.cpu=800m,
+# used: requests.cpu=500m, limited: requests.cpu=1
 
-kubectl set resources deployment efficient-app -n controlled \
-  --requests=cpu=200m,memory=64Mi \
-  --limits=cpu=200m,memory=64Mi
+# Save outputs
+kubectl describe limitrange compute-limits -n limitrange-lab > /root/limitrange-output.txt
+kubectl describe resourcequota compute-quota -n quota-lab > /root/quota-output.txt
 
-# Method 2: Create via YAML (more precise)
-cat <<EOF | kubectl apply -f -
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: efficient-app
-  namespace: controlled
-spec:
-  replicas: 3
-  selector:
-    matchLabels:
-      app: efficient-app
-  template:
-    metadata:
-      labels:
-        app: efficient-app
-    spec:
-      containers:
-      - name: app
-        image: nginx:1.24
-        resources:
-          requests:
-            cpu: 200m
-            memory: 64Mi
-          limits:
-            cpu: 200m
-            memory: 64Mi
-EOF
-
-# Wait for deployment to be ready
-kubectl wait --for=condition=Available deployment/efficient-app -n controlled --timeout=60s
-
-# Verify the deployment
-kubectl get deployment efficient-app -n controlled
-kubectl get pods -n controlled -l app=efficient-app
-
-# Check quota usage now
-kubectl describe resourcequota compute-quota -n controlled
-
-# You should see:
-# - Used pods: 6 (3 original + 3 deployment)
-# - Used CPU: 900m (3 × 100m + 3 × 200m)
-# - Still under quota limits!
+# View them
+cat /root/limitrange-output.txt
+echo "---"
+cat /root/quota-output.txt
 ```
 
 </details>
 
-## Calculating Quota Headroom
+## Rejection Messages Explained
 
-### Before Deployment
-- Pods: 3/5 used (after deleting 2)
-- CPU: 300m/2000m used
-- Memory: ~384Mi/2Gi used
+| Error Message | Controller | Meaning |
+|--------------|------------|---------|
+| "maximum memory usage per Container is 256Mi" | LimitRanger | Pod exceeds LimitRange max |
+| "exceeded quota: compute-quota, requested: pods=1" | ResourceQuota | Pod count would exceed quota |
+| "exceeded quota: compute-quota, requested: requests.cpu=800m" | ResourceQuota | Total CPU would exceed quota |
+| "must specify limits.cpu, limits.memory" | ResourceQuota | No resources set and no LimitRange defaults |
 
-### After Deployment
-- Pods: 6/5... wait, that's over!
+## Admission Controller Order
 
-**Important**: You need to ensure total pods ≤ 5. Since the Deployment needs 3 replicas, you can only have 2 other pods running.
-
-### Corrected Calculation
-- Delete `pod-4` and `pod-5` → leaves 3 pods (300m CPU)
-- Add 3 deployment replicas (600m CPU)
-- Total: 6 pods, 900m CPU
-- But the pod quota is 5!
-
-**Solution**: Delete one more pod, or reduce deployment replicas to 2.
-
-Let's adjust: delete `pod-3`, `pod-4`, `pod-5` to leave 2 pods, then deploy 3 replicas = 5 total.
-
-<details><summary>Corrected Solution</summary>
-
-```bash
-# Delete 3 pods to make room
-kubectl delete pod pod-3 pod-4 pod-5 -n controlled
-
-# Now create the deployment (as shown above)
-# Total will be 2 + 3 = 5 pods (fits quota)
-```
-
-</details>
+1. **LimitRanger** runs first — applies defaults and validates min/max
+2. **ResourceQuota** runs second — checks aggregate namespace usage
+3. If either rejects, the pod is **not created**

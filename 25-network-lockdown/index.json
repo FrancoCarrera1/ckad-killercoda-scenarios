@@ -2,7 +2,7 @@
   "title": "The Network Lockdown",
   "description": "Implement progressive zero-trust networking with NetworkPolicies",
   "details": {
-    "intro": { "text": "intro.md" },
+    "intro": { "text": "intro.md", "background": "setup.sh" },
     "steps": [
       { "title": "Step 1: Default Deny All", "text": "step1.md", "verify": "step1-verify.sh" },
       { "title": "Step 2: Allow Frontend to Backend", "text": "step2.md", "verify": "step2-verify.sh" },

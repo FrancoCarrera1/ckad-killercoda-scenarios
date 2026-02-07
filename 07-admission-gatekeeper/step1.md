@@ -1,42 +1,85 @@
-# Step 1: Identify Enabled Admission Controllers
+# Step 1: Configure a LimitRange
 
-Admission controllers are configured at the API server level. Let's examine which ones are enabled in your cluster.
+The `limitrange-lab` namespace has 3 pods running with **no resource requests or limits**. Your task is to create a LimitRange and update the pods to comply.
+
+## Examine the Current State
+
+First, check the existing pods:
+
+```bash
+kubectl get pods -n limitrange-lab
+kubectl get pod app-1 -n limitrange-lab -o jsonpath='{.spec.containers[0].resources}'
+```
+
+Notice that the `resources` field is empty — no requests or limits are set.
 
 ## Your Task
 
-1. **Find the kube-apiserver pod**:
-   - The API server runs as a static pod in the `kube-system` namespace
-   - It's typically named `kube-apiserver-<node-name>`
+### Part 1: Create a LimitRange
 
-2. **Examine the admission plugins**:
-   - Look at the pod's command-line arguments
-   - Find the `--enable-admission-plugins` flag
-   - Save the list of enabled plugins to `/root/admission-plugins.txt`
+Create a LimitRange named `compute-limits` in the `limitrange-lab` namespace with these settings:
 
-3. **Identify key admission controllers**:
-   - Look for: `LimitRanger`, `ResourceQuota`, `PodSecurity`, `NodeRestriction`
-   - These are the gatekeepers you'll work with
+| Setting | CPU | Memory |
+|---------|-----|--------|
+| **default** (limit) | 200m | 128Mi |
+| **defaultRequest** | 100m | 64Mi |
+| **max** | 500m | 256Mi |
+| **min** | 50m | 32Mi |
+
+The type should be `Container`.
+
+### Part 2: Understand Retroactive Behavior
+
+After creating the LimitRange, check the existing pods again:
+
+```bash
+kubectl get pod app-1 -n limitrange-lab -o jsonpath='{.spec.containers[0].resources}'
+```
+
+**Key insight**: The existing pods still have no resources! LimitRange defaults are only applied when a pod is **created** (at admission time). Already-running pods are not modified.
+
+### Part 3: Recreate the Pods
+
+Since the existing pods don't have the LimitRange defaults, you need to delete and recreate them so the defaults get applied:
+
+1. Delete all 3 pods
+2. Recreate them with the same names and image (`nginx:1.24`)
+3. Verify the LimitRange defaults were automatically injected
 
 <details><summary>Hint</summary>
 
-To find the API server pod:
+To create the LimitRange:
 ```bash
-kubectl get pods -n kube-system | grep apiserver
+cat <<EOF | kubectl apply -f -
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: compute-limits
+  namespace: limitrange-lab
+spec:
+  limits:
+  - default:
+      cpu: 200m
+      memory: 128Mi
+    defaultRequest:
+      cpu: 100m
+      memory: 64Mi
+    max:
+      cpu: 500m
+      memory: 256Mi
+    min:
+      cpu: 50m
+      memory: 32Mi
+    type: Container
+EOF
 ```
 
-To see the full command and arguments:
+To recreate pods:
 ```bash
-kubectl get pod <apiserver-pod-name> -n kube-system -o yaml | grep -A 5 "enable-admission-plugins"
-```
-
-Or look at the static pod manifest:
-```bash
-cat /etc/kubernetes/manifests/kube-apiserver.yaml | grep enable-admission-plugins
-```
-
-To save to a file:
-```bash
-kubectl get pod <apiserver-pod-name> -n kube-system -o yaml | grep "enable-admission-plugins" > /root/admission-plugins.txt
+kubectl delete pod app-1 app-2 app-3 -n limitrange-lab
+for i in 1 2 3; do
+  kubectl run app-$i --image=nginx:1.24 -n limitrange-lab
+done
 ```
 
 </details>
@@ -44,50 +87,63 @@ kubectl get pod <apiserver-pod-name> -n kube-system -o yaml | grep "enable-admis
 <details><summary>Solution</summary>
 
 ```bash
-# Find the API server pod
-kubectl get pods -n kube-system | grep apiserver
+# Create the LimitRange
+cat <<EOF | kubectl apply -f -
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: compute-limits
+  namespace: limitrange-lab
+spec:
+  limits:
+  - default:
+      cpu: 200m
+      memory: 128Mi
+    defaultRequest:
+      cpu: 100m
+      memory: 64Mi
+    max:
+      cpu: 500m
+      memory: 256Mi
+    min:
+      cpu: 50m
+      memory: 32Mi
+    type: Container
+EOF
 
-# Get the pod name (it will be something like kube-apiserver-controlplane)
-APISERVER_POD=$(kubectl get pods -n kube-system -o name | grep apiserver | head -1)
+# Verify the LimitRange
+kubectl describe limitrange compute-limits -n limitrange-lab
 
-# View the admission plugins
-kubectl get $APISERVER_POD -n kube-system -o yaml | grep "enable-admission-plugins"
+# Check existing pods — still no resources!
+kubectl get pod app-1 -n limitrange-lab -o jsonpath='{.spec.containers[0].resources}'
+echo ""
+# Output: {} (empty)
 
-# Save to file
-kubectl get $APISERVER_POD -n kube-system -o yaml | grep "enable-admission-plugins" > /root/admission-plugins.txt
+# Delete and recreate the pods
+kubectl delete pod app-1 app-2 app-3 -n limitrange-lab
 
-# Alternative: check the static pod manifest
-cat /etc/kubernetes/manifests/kube-apiserver.yaml | grep enable-admission-plugins
+for i in 1 2 3; do
+  kubectl run app-$i --image=nginx:1.24 -n limitrange-lab
+done
 
-# View the file
-cat /root/admission-plugins.txt
+# Wait for pods to be ready
+kubectl wait --for=condition=Ready pods --all -n limitrange-lab --timeout=60s
+
+# Verify defaults were injected
+kubectl get pod app-1 -n limitrange-lab -o jsonpath='{.spec.containers[0].resources}' | python3 -m json.tool
+# Should show:
+# {
+#   "limits": { "cpu": "200m", "memory": "128Mi" },
+#   "requests": { "cpu": "100m", "memory": "64Mi" }
+# }
 ```
-
-Common admission controllers you'll see:
-- **NodeRestriction**: Limits what kubelets can modify
-- **LimitRanger**: Enforces LimitRange constraints
-- **ResourceQuota**: Enforces ResourceQuota constraints
-- **PodSecurity**: Enforces Pod Security Standards
-- **ServiceAccount**: Automates ServiceAccount token mounting
-- **DefaultStorageClass**: Sets default storage class
-- **MutatingAdmissionWebhook**: Calls external webhooks that can modify requests
-- **ValidatingAdmissionWebhook**: Calls external webhooks that validate requests
 
 </details>
 
-## Understanding Admission Controllers
+## How LimitRange Works
 
-### Built-in Controllers
-- **Compiled into the API server**
-- Enabled via `--enable-admission-plugins` flag
-- Common ones: LimitRanger, ResourceQuota, PodSecurity, NodeRestriction
-
-### Webhook Controllers
-- **External services**
-- Registered as MutatingWebhookConfiguration or ValidatingWebhookConfiguration
-- Examples: OPA Gatekeeper, Istio sidecar injection
-
-### Admission Controller Order
-1. **Mutating** controllers run first (can modify requests)
-2. **Validating** controllers run last (can only accept/reject)
-3. If any controller rejects, the entire request fails
+- **`default`**: The limit applied to containers that don't specify their own limits
+- **`defaultRequest`**: The request applied to containers that don't specify their own requests
+- **`max`**: The maximum limit a container can request (pods exceeding this are rejected)
+- **`min`**: The minimum request a container must have (pods below this are rejected)
+- **`type: Container`**: These rules apply per-container (can also be `Pod` or `PersistentVolumeClaim`)

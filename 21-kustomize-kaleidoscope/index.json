@@ -2,7 +2,7 @@
   "title": "The Kustomize Kaleidoscope",
   "description": "Build environment-specific configurations with Kustomize bases, overlays, and generators",
   "details": {
-    "intro": { "text": "intro.md" },
+    "intro": { "text": "intro.md", "background": "setup.sh" },
     "steps": [
       { "title": "Create Kustomize Base Configuration", "text": "step1.md", "verify": "step1-verify.sh" },
       { "title": "Build Environment Overlays", "text": "step2.md", "verify": "step2-verify.sh" },

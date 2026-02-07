@@ -3,7 +3,8 @@
   "description": "Handle Kubernetes secrets like a pro—generic, TLS, and docker-registry types with security contexts",
   "details": {
     "intro": {
-      "text": "intro.md"
+      "text": "intro.md",
+      "background": "setup.sh"
     },
     "steps": [
       {

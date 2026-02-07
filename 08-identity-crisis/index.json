@@ -2,7 +2,7 @@
   "title": "The Identity Crisis",
   "description": "Master ServiceAccount token mechanics—auto-mount, projected volumes, and API access",
   "details": {
-    "intro": { "text": "intro.md" },
+    "intro": { "text": "intro.md", "background": "setup.sh" },
     "steps": [
       { "title": "Compare Auto-Mount vs No-Mount Tokens", "text": "step1.md", "verify": "step1-verify.sh" },
       { "title": "Create Custom Token with Projected Volume", "text": "step2.md", "verify": "step2-verify.sh" },

@@ -3,7 +3,8 @@
   "description": "Survey and document your cluster's resources using kubectl output formatting",
   "details": {
     "intro": {
-      "text": "intro.md"
+      "text": "intro.md",
+      "background": "setup.sh"
     },
     "steps": [
       {

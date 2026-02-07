@@ -2,7 +2,7 @@
   "title": "The DNS Detective",
   "description": "Deep dive into Kubernetes DNS—same-namespace, cross-namespace, headless, and StatefulSet records",
   "details": {
-    "intro": { "text": "intro.md" },
+    "intro": { "text": "intro.md", "background": "setup.sh" },
     "steps": [
       { "title": "Step 1: Same-Namespace DNS Resolution", "text": "step1.md", "verify": "step1-verify.sh" },
       { "title": "Step 2: Cross-Namespace DNS Resolution", "text": "step2.md", "verify": "step2-verify.sh" },

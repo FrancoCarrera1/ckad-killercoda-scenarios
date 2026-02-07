@@ -1,20 +1,28 @@
 #!/bin/bash
 set -euo pipefail
 
-# Check if the deployment exists
-if ! kubectl get deployment efficient-app -n controlled &>/dev/null; then
-  echo "Deployment 'efficient-app' not found in controlled namespace"
+# Check that the output files exist
+if [ ! -f /root/limitrange-output.txt ]; then
+  echo "File /root/limitrange-output.txt not found"
+  echo "Run: kubectl describe limitrange compute-limits -n limitrange-lab > /root/limitrange-output.txt"
   exit 1
 fi
 
-# Check if the deployment has 3 ready replicas
-READY_REPLICAS=$(kubectl get deployment efficient-app -n controlled -o jsonpath='{.status.readyReplicas}' 2>/dev/null || echo "0")
-
-if [ "$READY_REPLICAS" -ne 3 ]; then
-  echo "Deployment 'efficient-app' should have 3 ready replicas, found $READY_REPLICAS"
-  echo "You may need to delete some pods to make room for the deployment within the quota"
+if [ ! -s /root/limitrange-output.txt ]; then
+  echo "File /root/limitrange-output.txt is empty"
   exit 1
 fi
 
-echo "Success: Deployment 'efficient-app' is running with 3 ready replicas"
+if [ ! -f /root/quota-output.txt ]; then
+  echo "File /root/quota-output.txt not found"
+  echo "Run: kubectl describe resourcequota compute-quota -n quota-lab > /root/quota-output.txt"
+  exit 1
+fi
+
+if [ ! -s /root/quota-output.txt ]; then
+  echo "File /root/quota-output.txt is empty"
+  exit 1
+fi
+
+echo "Success: Enforcement tests completed and output files saved"
 exit 0

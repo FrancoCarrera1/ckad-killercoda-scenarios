@@ -2,7 +2,7 @@
   "title": "The Cross-Namespace Corridor",
   "description": "Build asymmetric cross-namespace NetworkPolicies",
   "details": {
-    "intro": { "text": "intro.md" },
+    "intro": { "text": "intro.md", "background": "setup.sh" },
     "steps": [
       { "title": "Step 1: Apply Default Deny Policies", "text": "step1.md", "verify": "step1-verify.sh" },
       { "title": "Step 2: Allow API Gateway to Backend", "text": "step2.md", "verify": "step2-verify.sh" },

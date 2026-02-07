@@ -2,7 +2,7 @@
   "title": "The Health Inspector",
   "description": "Configure all three probe types and observe the failure cascade",
   "details": {
-    "intro": { "text": "intro.md" },
+    "intro": { "text": "intro.md", "background": "setup.sh" },
     "steps": [
       { "title": "Step 1: Configure All Three Probes", "text": "step1.md", "verify": "step1-verify.sh" },
       { "title": "Step 2: Observe Probe Success", "text": "step2.md", "verify": "step2-verify.sh" },

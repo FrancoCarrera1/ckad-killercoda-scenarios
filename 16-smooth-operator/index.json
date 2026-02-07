@@ -2,7 +2,7 @@
   "title": "The Smooth Operator",
   "description": "Master rolling update parameters for zero-downtime deployments",
   "details": {
-    "intro": { "text": "intro.md" },
+    "intro": { "text": "intro.md", "background": "setup.sh" },
     "steps": [
       { "title": "Create Deployment with Rolling Update Strategy", "text": "step1.md", "verify": "step1-verify.sh" },
       { "title": "Perform Rolling Update", "text": "step2.md", "verify": "step2-verify.sh" },

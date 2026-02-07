@@ -1,12 +1,12 @@
 {
   "title": "The Admission Gatekeeper",
-  "description": "Understand how admission controllers, LimitRanges, and ResourceQuotas guard your cluster",
+  "description": "Configure LimitRange and ResourceQuota to control resource usage in Kubernetes namespaces",
   "details": {
-    "intro": { "text": "intro.md" },
+    "intro": { "text": "intro.md", "background": "setup.sh" },
     "steps": [
-      { "title": "Identify Enabled Admission Controllers", "text": "step1.md", "verify": "step1-verify.sh" },
-      { "title": "Test LimitRange and ResourceQuota Enforcement", "text": "step2.md", "verify": "step2-verify.sh" },
-      { "title": "Deploy Within Quota Headroom", "text": "step3.md", "verify": "step3-verify.sh" }
+      { "title": "Configure a LimitRange", "text": "step1.md", "verify": "step1-verify.sh" },
+      { "title": "Configure a ResourceQuota", "text": "step2.md", "verify": "step2-verify.sh" },
+      { "title": "Test Enforcement", "text": "step3.md", "verify": "step3-verify.sh" }
     ],
     "finish": { "text": "finish.md" }
   },

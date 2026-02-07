@@ -2,7 +2,7 @@
   "title": "The Canary Cage",
   "description": "Implement canary deployments with weighted traffic splitting",
   "details": {
-    "intro": { "text": "intro.md" },
+    "intro": { "text": "intro.md", "background": "setup.sh" },
     "steps": [
       { "title": "Step 1: Deploy Stable Version", "text": "step1.md", "verify": "step1-verify.sh" },
       { "title": "Step 2: Deploy Canary", "text": "step2.md", "verify": "step2-verify.sh" },

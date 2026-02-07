@@ -2,7 +2,7 @@
   "title": "The Traffic Director",
   "description": "Route traffic to multiple backends using Ingress path rules",
   "details": {
-    "intro": { "text": "intro.md" },
+    "intro": { "text": "intro.md", "background": "setup.sh" },
     "steps": [
       { "title": "Deploy Multiple Backend Services", "text": "step1.md", "verify": "step1-verify.sh" },
       { "title": "Create Path-Based Ingress Rules", "text": "step2.md", "verify": "step2-verify.sh" },

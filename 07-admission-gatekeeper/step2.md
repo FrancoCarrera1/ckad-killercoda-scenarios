@@ -1,60 +1,104 @@
-# Step 2: Test LimitRange and ResourceQuota Enforcement
+# Step 2: Configure a ResourceQuota
 
-Now let's see these admission controllers in action! You'll test both LimitRange (per-pod limits) and ResourceQuota (namespace-level limits).
+The `quota-lab` namespace also has 3 pods running with **no resource requests or limits**. Your task is to create a ResourceQuota and ensure all pods comply.
+
+## Examine the Current State
+
+```bash
+kubectl get pods -n quota-lab
+kubectl get pod app-1 -n quota-lab -o jsonpath='{.spec.containers[0].resources}'
+```
+
+Again, no resources are set on any pod.
 
 ## Your Task
 
-### Part 1: Test LimitRange Rejection
+### Part 1: Create a ResourceQuota
 
-1. **Check the LimitRange**:
-   - View the LimitRange in the `controlled` namespace
-   - Note the max limits: 256Mi memory, 256m CPU
+Create a ResourceQuota named `compute-quota` in the `quota-lab` namespace:
 
-2. **Try to create a pod that exceeds limits**:
-   - Create a pod named `too-big` in the `controlled` namespace
-   - Use image `nginx:1.24`
-   - Request 512Mi memory (exceeds the 256Mi max)
-   - The LimitRanger admission controller should **REJECT** this
+| Resource | Hard Limit |
+|----------|-----------|
+| requests.cpu | 1 |
+| requests.memory | 512Mi |
+| limits.cpu | 2 |
+| limits.memory | 1Gi |
+| pods | 6 |
 
-### Part 2: Test ResourceQuota Enforcement
+### Part 2: Understand the Enforcement Problem
 
-1. **Check the ResourceQuota**:
-   - View the quota in the `controlled` namespace
-   - Note the pod limit: 5 pods max
+After creating the quota, the existing 3 pods continue running — ResourceQuota doesn't evict running pods. But try creating a new pod:
 
-2. **Create 5 minimal pods**:
-   - Create pods named `pod-1`, `pod-2`, `pod-3`, `pod-4`, `pod-5`
-   - Use image `nginx:1.24`
-   - Don't specify resources (they'll get defaults from LimitRange)
+```bash
+kubectl run test-pod --image=nginx:1.24 -n quota-lab
+```
 
-3. **Try to create a 6th pod**:
-   - Try to create `pod-6`
-   - The ResourceQuota admission controller should **REJECT** this
+**This will fail!** When a ResourceQuota for CPU/memory exists, **every new pod must specify resource requests and limits**. Without a LimitRange to inject defaults, the pod is rejected.
+
+### Part 3: Create a LimitRange for Defaults
+
+To allow new pods to be created without explicitly setting resources, create a LimitRange named `compute-limits` in the `quota-lab` namespace:
+
+| Setting | CPU | Memory |
+|---------|-----|--------|
+| **default** (limit) | 200m | 128Mi |
+| **defaultRequest** | 100m | 64Mi |
+
+This LimitRange provides defaults so that new pods automatically get resource requests/limits and satisfy the ResourceQuota requirement.
+
+### Part 4: Recreate the Pods
+
+The existing pods still have no resources and don't count toward the quota's resource tracking properly. Delete and recreate them:
+
+1. Delete all 3 pods in `quota-lab`
+2. Recreate them with the same names and image (`nginx:1.24`)
+3. Verify the quota usage is being tracked
 
 <details><summary>Hint</summary>
 
-To view the LimitRange:
+ResourceQuota:
 ```bash
-kubectl get limitrange -n controlled
-kubectl describe limitrange compute-limits -n controlled
+cat <<EOF | kubectl apply -f -
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: compute-quota
+  namespace: quota-lab
+spec:
+  hard:
+    requests.cpu: "1"
+    requests.memory: 512Mi
+    limits.cpu: "2"
+    limits.memory: 1Gi
+    pods: "6"
+EOF
 ```
 
-To view the ResourceQuota:
+LimitRange:
 ```bash
-kubectl get resourcequota -n controlled
-kubectl describe resourcequota compute-quota -n controlled
+cat <<EOF | kubectl apply -f -
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: compute-limits
+  namespace: quota-lab
+spec:
+  limits:
+  - default:
+      cpu: 200m
+      memory: 128Mi
+    defaultRequest:
+      cpu: 100m
+      memory: 64Mi
+    type: Container
+EOF
 ```
 
-To create a pod with resource requests:
+Recreate pods:
 ```bash
-kubectl run too-big --image=nginx:1.24 -n controlled \
-  --requests='memory=512Mi'
-```
-
-To create simple pods in a loop:
-```bash
-for i in {1..5}; do
-  kubectl run pod-$i --image=nginx:1.24 -n controlled
+kubectl delete pod app-1 app-2 app-3 -n quota-lab
+for i in 1 2 3; do
+  kubectl run app-$i --image=nginx:1.24 -n quota-lab
 done
 ```
 
@@ -63,63 +107,74 @@ done
 <details><summary>Solution</summary>
 
 ```bash
-# Part 1: Test LimitRange
+# Create the ResourceQuota
+cat <<EOF | kubectl apply -f -
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: compute-quota
+  namespace: quota-lab
+spec:
+  hard:
+    requests.cpu: "1"
+    requests.memory: 512Mi
+    limits.cpu: "2"
+    limits.memory: 1Gi
+    pods: "6"
+EOF
 
-# View the LimitRange
-kubectl get limitrange -n controlled
-kubectl describe limitrange compute-limits -n controlled
+# Verify the quota
+kubectl describe resourcequota compute-quota -n quota-lab
 
-# Try to create a pod exceeding the limit
-kubectl run too-big --image=nginx:1.24 -n controlled --requests='memory=512Mi'
+# Try creating a pod without resources — this will FAIL
+kubectl run test-pod --image=nginx:1.24 -n quota-lab 2>&1 || true
+# Error: pods "test-pod" is forbidden: failed quota: compute-quota:
+# must specify limits.cpu, limits.memory, requests.cpu, requests.memory
 
-# Expected error:
-# Error from server (Forbidden): pods "too-big" is forbidden:
-# maximum memory usage per Container is 256Mi, but request is 512Mi
+# Create a LimitRange to provide defaults
+cat <<EOF | kubectl apply -f -
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: compute-limits
+  namespace: quota-lab
+spec:
+  limits:
+  - default:
+      cpu: 200m
+      memory: 128Mi
+    defaultRequest:
+      cpu: 100m
+      memory: 64Mi
+    type: Container
+EOF
 
-# Part 2: Test ResourceQuota
+# Delete and recreate the pods
+kubectl delete pod app-1 app-2 app-3 -n quota-lab
 
-# View the ResourceQuota
-kubectl get resourcequota -n controlled
-kubectl describe resourcequota compute-quota -n controlled
-
-# Create 5 pods (this will succeed)
-for i in {1..5}; do
-  kubectl run pod-$i --image=nginx:1.24 -n controlled
-  sleep 1
+for i in 1 2 3; do
+  kubectl run app-$i --image=nginx:1.24 -n quota-lab
 done
 
-# Check the quota usage
-kubectl describe resourcequota compute-quota -n controlled
+# Wait for pods to be ready
+kubectl wait --for=condition=Ready pods --all -n quota-lab --timeout=60s
 
-# Try to create a 6th pod (this will fail)
-kubectl run pod-6 --image=nginx:1.24 -n controlled
+# Check quota usage — now resources are tracked
+kubectl describe resourcequota compute-quota -n quota-lab
+# Should show:
+# Used: requests.cpu=300m, requests.memory=192Mi, pods=3
+# Hard: requests.cpu=1, requests.memory=512Mi, pods=6
 
-# Expected error:
-# Error from server (Forbidden): pods "pod-6" is forbidden:
-# exceeded quota: compute-quota, requested: pods=1, used: pods=5, limited: pods=5
-
-# Verify exactly 5 pods exist
-kubectl get pods -n controlled
+# Clean up the failed test pod if it somehow exists
+kubectl delete pod test-pod -n quota-lab --ignore-not-found
 ```
 
 </details>
 
-## Understanding the Admission Flow
+## How ResourceQuota Works
 
-### LimitRanger Admission Controller
-- **Runs BEFORE ResourceQuota**
-- Validates that container/pod requests don't exceed LimitRange max
-- Applies default requests/limits if not specified
-- Rejects pods that violate constraints
-
-### ResourceQuota Admission Controller
-- **Runs AFTER LimitRanger**
-- Validates that the sum of all pods' requests doesn't exceed quota
-- Tracks usage across the namespace
-- Rejects pods that would exceed quota
-
-### Rejection Messages
-- LimitRange: "maximum memory usage per Container is 256Mi"
-- ResourceQuota: "exceeded quota: compute-quota, requested: pods=1"
-
-When a pod is rejected, it's never created - the API server returns an error immediately.
+- **Tracks aggregate usage** across all pods in the namespace
+- **Rejects new pods** that would exceed any hard limit
+- **Does not evict** existing pods — only prevents new ones from being created
+- When CPU/memory quotas are set, **all new pods must have resource requests/limits** specified (either manually or via LimitRange defaults)
+- The **LimitRanger** admission controller runs before **ResourceQuota**, so LimitRange defaults are applied first, then quota is checked

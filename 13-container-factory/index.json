@@ -2,7 +2,7 @@
   "title": "The Container Factory",
   "description": "Build, tag, save, and inspect container images with multi-stage Dockerfiles",
   "details": {
-    "intro": { "text": "intro.md" },
+    "intro": { "text": "intro.md", "background": "setup.sh" },
     "steps": [
       { "title": "Build Multi-Stage Docker Image", "text": "step1.md", "verify": "step1-verify.sh" },
       { "title": "Tag, Save, and Load Images", "text": "step2.md", "verify": "step2-verify.sh" },

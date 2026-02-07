@@ -2,7 +2,7 @@
   "title": "The Sidecar Surgery",
   "description": "Retrofit logging sidecars and health probes onto a legacy deployment",
   "details": {
-    "intro": { "text": "intro.md" },
+    "intro": { "text": "intro.md", "background": "setup.sh" },
     "steps": [
       { "title": "Examine the Legacy Deployment", "text": "step1.md", "verify": "step1-verify.sh" },
       { "title": "Add Sidecar Container with Shared Volumes", "text": "step2.md", "verify": "step2-verify.sh" },

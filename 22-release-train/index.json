@@ -2,7 +2,7 @@
   "title": "The Release Train",
   "description": "Combine Helm and Kustomize for a full-stack deployment pipeline",
   "details": {
-    "intro": { "text": "intro.md" },
+    "intro": { "text": "intro.md", "background": "setup.sh" },
     "steps": [
       { "title": "Deploy Redis with Helm", "text": "step1.md", "verify": "step1-verify.sh" },
       { "title": "Deploy Webapp with Kustomize", "text": "step2.md", "verify": "step2-verify.sh" },

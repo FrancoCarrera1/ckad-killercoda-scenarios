@@ -2,7 +2,7 @@
   "title": "The API Archaeologist",
   "description": "Convert deprecated API manifests to current versions",
   "details": {
-    "intro": { "text": "intro.md" },
+    "intro": { "text": "intro.md", "background": "setup.sh" },
     "steps": [
       { "title": "Step 1: Discover the Deprecated APIs", "text": "step1.md", "verify": "step1-verify.sh" },
       { "title": "Step 2: Convert to Current API Versions", "text": "step2.md", "verify": "step2-verify.sh" },

@@ -2,7 +2,7 @@
   "title": "The Data Pipeline",
   "description": "Build batch processing pipelines with Jobs and CronJobs",
   "details": {
-    "intro": { "text": "intro.md" },
+    "intro": { "text": "intro.md", "background": "setup.sh" },
     "steps": [
       { "title": "Create Parallel Job", "text": "step1.md", "verify": "step1-verify.sh" },
       { "title": "Schedule CronJob", "text": "step2.md", "verify": "step2-verify.sh" },
