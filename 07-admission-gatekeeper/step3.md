@@ -45,7 +45,20 @@ kubectl describe resourcequota compute-quota -n quota-lab > /root/quota-output.t
 
 Test LimitRange max:
 ```bash
-kubectl run too-big --image=nginx:1.24 -n limitrange-lab --requests='memory=512Mi'
+cat <<EOF | kubectl apply -f -
+apiVersion: v1
+kind: Pod
+metadata:
+  name: too-big
+  namespace: limitrange-lab
+spec:
+  containers:
+  - name: too-big
+    image: nginx:1.24
+    resources:
+      requests:
+        memory: 512Mi
+EOF
 # Should fail with: maximum memory usage per Container is 256Mi
 ```
 
@@ -63,7 +76,22 @@ kubectl run extra-3 --image=nginx:1.24 -n quota-lab
 
 Test CPU limit:
 ```bash
-kubectl run cpu-hungry --image=nginx:1.24 -n quota-lab --requests='cpu=800m' --limits='cpu=800m'
+cat <<EOF | kubectl apply -f -
+apiVersion: v1
+kind: Pod
+metadata:
+  name: cpu-hungry
+  namespace: quota-lab
+spec:
+  containers:
+  - name: cpu-hungry
+    image: nginx:1.24
+    resources:
+      requests:
+        cpu: 800m
+      limits:
+        cpu: 800m
+EOF
 ```
 
 </details>
@@ -72,7 +100,20 @@ kubectl run cpu-hungry --image=nginx:1.24 -n quota-lab --requests='cpu=800m' --l
 
 ```bash
 # Test 1: LimitRange max rejection
-kubectl run too-big --image=nginx:1.24 -n limitrange-lab --requests='memory=512Mi' 2>&1 || true
+cat <<EOF | kubectl apply -f - 2>&1 || true
+apiVersion: v1
+kind: Pod
+metadata:
+  name: too-big
+  namespace: limitrange-lab
+spec:
+  containers:
+  - name: too-big
+    image: nginx:1.24
+    resources:
+      requests:
+        memory: 512Mi
+EOF
 # Error: maximum memory usage per Container is 256Mi, but request is 512Mi
 
 # Test 2: ResourceQuota pod limit
@@ -93,7 +134,22 @@ kubectl run extra-4 --image=nginx:1.24 -n quota-lab 2>&1 || true
 # 800m would bring total to 1400m, but we're already at pod limit
 # If we delete a pod first to make room:
 kubectl delete pod extra-3 -n quota-lab
-kubectl run cpu-hungry --image=nginx:1.24 -n quota-lab --requests='cpu=800m' --limits='cpu=800m' 2>&1 || true
+cat <<EOF | kubectl apply -f - 2>&1 || true
+apiVersion: v1
+kind: Pod
+metadata:
+  name: cpu-hungry
+  namespace: quota-lab
+spec:
+  containers:
+  - name: cpu-hungry
+    image: nginx:1.24
+    resources:
+      requests:
+        cpu: 800m
+      limits:
+        cpu: 800m
+EOF
 # Error: exceeded quota: compute-quota, requested: requests.cpu=800m,
 # used: requests.cpu=500m, limited: requests.cpu=1
 

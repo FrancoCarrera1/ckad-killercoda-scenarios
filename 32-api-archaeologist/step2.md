@@ -18,6 +18,11 @@ Create three new manifest files with the following changes:
 
 <details><summary>Hint</summary>
 
+Use `kubectl api-resources` to find the correct API group and version for each resource:
+```bash
+kubectl api-resources | grep -E "deployments|ingresses|cronjobs"
+```
+
 Create the directory first: `mkdir -p /root/fixed-manifests`
 
 Key changes:
@@ -100,3 +105,5 @@ EOF
 ```
 
 </details>
+
+> **Note:** The validation for this step checks for files in `/root/fixed-manifests/`. If you applied your manifests directly to the cluster without saving them to that directory, the validation may fail even though the resources are running. If all your objects are deployed and running in the `archaeology` namespace, feel free to skip to the next step.
