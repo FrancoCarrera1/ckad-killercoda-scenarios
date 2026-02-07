@@ -1,0 +1,16 @@
+{
+  "title": "The Smooth Operator",
+  "description": "Master rolling update parameters for zero-downtime deployments",
+  "details": {
+    "intro": { "text": "intro.md" },
+    "steps": [
+      { "title": "Create Deployment with Rolling Update Strategy", "text": "step1.md", "verify": "step1-verify.sh" },
+      { "title": "Perform Rolling Update", "text": "step2.md", "verify": "step2-verify.sh" },
+      { "title": "Inspect Rollout History", "text": "step3.md", "verify": "step3-verify.sh" }
+    ],
+    "finish": { "text": "finish.md" }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-2nodes"
+  }
+}

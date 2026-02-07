@@ -1,0 +1,16 @@
+{
+  "title": "The Identity Crisis",
+  "description": "Master ServiceAccount token mechanics—auto-mount, projected volumes, and API access",
+  "details": {
+    "intro": { "text": "intro.md" },
+    "steps": [
+      { "title": "Compare Auto-Mount vs No-Mount Tokens", "text": "step1.md", "verify": "step1-verify.sh" },
+      { "title": "Create Custom Token with Projected Volume", "text": "step2.md", "verify": "step2-verify.sh" },
+      { "title": "Use Token for In-Cluster API Access", "text": "step3.md", "verify": "step3-verify.sh" }
+    ],
+    "finish": { "text": "finish.md" }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-2nodes"
+  }
+}

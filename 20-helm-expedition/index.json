@@ -1,0 +1,16 @@
+{
+  "title": "The Helm Expedition",
+  "description": "Navigate the complete Helm lifecycle—search, install, upgrade, rollback, and uninstall",
+  "details": {
+    "intro": { "text": "intro.md" },
+    "steps": [
+      { "title": "Add and Explore Helm Repository", "text": "step1.md", "verify": "step1-verify.sh" },
+      { "title": "Install Apache with Custom Values", "text": "step2.md", "verify": "step2-verify.sh" },
+      { "title": "Upgrade, Rollback, and Uninstall", "text": "step3.md", "verify": "step3-verify.sh" }
+    ],
+    "finish": { "text": "finish.md" }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-2nodes"
+  }
+}

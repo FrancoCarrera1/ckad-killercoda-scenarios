@@ -1,0 +1,16 @@
+{
+  "title": "The Broken Bridge",
+  "description": "Trace and fix a broken Ingress → Service → Pod networking chain",
+  "details": {
+    "intro": { "text": "intro.md" },
+    "steps": [
+      { "title": "Step 1: Trace the Networking Chain", "text": "step1.md", "verify": "step1-verify.sh" },
+      { "title": "Step 2: Fix Service Bugs", "text": "step2.md", "verify": "step2-verify.sh" },
+      { "title": "Step 3: Fix Ingress Bug", "text": "step3.md", "verify": "step3-verify.sh" }
+    ],
+    "finish": { "text": "finish.md" }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-2nodes"
+  }
+}

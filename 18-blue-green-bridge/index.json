@@ -1,0 +1,16 @@
+{
+  "title": "The Blue-Green Bridge",
+  "description": "Implement zero-downtime blue-green deployments with Service selector switching",
+  "details": {
+    "intro": { "text": "intro.md" },
+    "steps": [
+      { "title": "Deploy Blue Version", "text": "step1.md", "verify": "step1-verify.sh" },
+      { "title": "Deploy Green Version", "text": "step2.md", "verify": "step2-verify.sh" },
+      { "title": "Switch Traffic to Green", "text": "step3.md", "verify": "step3-verify.sh" }
+    ],
+    "finish": { "text": "finish.md" }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-2nodes"
+  }
+}

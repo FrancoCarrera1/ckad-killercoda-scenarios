@@ -1,0 +1,16 @@
+{
+  "title": "The Time Machine",
+  "description": "Rescue a broken deployment with rollback techniques",
+  "details": {
+    "intro": { "text": "intro.md" },
+    "steps": [
+      { "title": "Diagnose the Broken Deployment", "text": "step1.md", "verify": "step1-verify.sh" },
+      { "title": "Roll Back to Previous Version", "text": "step2.md", "verify": "step2-verify.sh" },
+      { "title": "Roll Back to Specific Revision", "text": "step3.md", "verify": "step3-verify.sh" }
+    ],
+    "finish": { "text": "finish.md" }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-2nodes"
+  }
+}

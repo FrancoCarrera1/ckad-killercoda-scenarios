@@ -1,0 +1,17 @@
+{
+  "title": "The Kustomize Kaleidoscope",
+  "description": "Build environment-specific configurations with Kustomize bases, overlays, and generators",
+  "details": {
+    "intro": { "text": "intro.md" },
+    "steps": [
+      { "title": "Create Kustomize Base Configuration", "text": "step1.md", "verify": "step1-verify.sh" },
+      { "title": "Build Environment Overlays", "text": "step2.md", "verify": "step2-verify.sh" },
+      { "title": "Deploy Both Environments", "text": "step3.md", "verify": "step3-verify.sh" },
+      { "title": "Add ConfigMap and Secret Generators", "text": "step4.md", "verify": "step4-verify.sh" }
+    ],
+    "finish": { "text": "finish.md" }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-2nodes"
+  }
+}

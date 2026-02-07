@@ -1,0 +1,16 @@
+{
+  "title": "The Data Pipeline",
+  "description": "Build batch processing pipelines with Jobs and CronJobs",
+  "details": {
+    "intro": { "text": "intro.md" },
+    "steps": [
+      { "title": "Create Parallel Job", "text": "step1.md", "verify": "step1-verify.sh" },
+      { "title": "Schedule CronJob", "text": "step2.md", "verify": "step2-verify.sh" },
+      { "title": "Manual Job Trigger", "text": "step3.md", "verify": "step3-verify.sh" }
+    ],
+    "finish": { "text": "finish.md" }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-2nodes"
+  }
+}

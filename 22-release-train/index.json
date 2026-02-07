@@ -1,0 +1,17 @@
+{
+  "title": "The Release Train",
+  "description": "Combine Helm and Kustomize for a full-stack deployment pipeline",
+  "details": {
+    "intro": { "text": "intro.md" },
+    "steps": [
+      { "title": "Deploy Redis with Helm", "text": "step1.md", "verify": "step1-verify.sh" },
+      { "title": "Deploy Webapp with Kustomize", "text": "step2.md", "verify": "step2-verify.sh" },
+      { "title": "Rolling Update the Webapp", "text": "step3.md", "verify": "step3-verify.sh" },
+      { "title": "Handle Failed Update and Rollback", "text": "step4.md", "verify": "step4-verify.sh" }
+    ],
+    "finish": { "text": "finish.md" }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-2nodes"
+  }
+}

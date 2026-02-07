@@ -1,0 +1,16 @@
+{
+  "title": "The Microservices Quartet",
+  "description": "Orchestrate init containers, sidecars, and shared volumes in a multi-container pod",
+  "details": {
+    "intro": { "text": "intro.md" },
+    "steps": [
+      { "title": "Create Multi-Container Pod", "text": "step1.md", "verify": "step1-verify.sh" },
+      { "title": "Verify Init Container", "text": "step2.md", "verify": "step2-verify.sh" },
+      { "title": "Test Shared Volume", "text": "step3.md", "verify": "step3-verify.sh" }
+    ],
+    "finish": { "text": "finish.md" }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-2nodes"
+  }
+}

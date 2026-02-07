@@ -1,0 +1,16 @@
+{
+  "title": "The Admission Gatekeeper",
+  "description": "Understand how admission controllers, LimitRanges, and ResourceQuotas guard your cluster",
+  "details": {
+    "intro": { "text": "intro.md" },
+    "steps": [
+      { "title": "Identify Enabled Admission Controllers", "text": "step1.md", "verify": "step1-verify.sh" },
+      { "title": "Test LimitRange and ResourceQuota Enforcement", "text": "step2.md", "verify": "step2-verify.sh" },
+      { "title": "Deploy Within Quota Headroom", "text": "step3.md", "verify": "step3-verify.sh" }
+    ],
+    "finish": { "text": "finish.md" }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-2nodes"
+  }
+}

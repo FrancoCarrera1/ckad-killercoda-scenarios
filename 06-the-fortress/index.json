@@ -1,0 +1,17 @@
+{
+  "title": "The Fortress",
+  "description": "Enforce Pod Security Standards across namespaces",
+  "details": {
+    "intro": { "text": "intro.md" },
+    "steps": [
+      { "title": "Label Namespaces with Pod Security Standards", "text": "step1.md", "verify": "step1-verify.sh" },
+      { "title": "Deploy a Restricted-Compliant Pod", "text": "step2.md", "verify": "step2-verify.sh" },
+      { "title": "Test Baseline vs Restricted Enforcement", "text": "step3.md", "verify": "step3-verify.sh" },
+      { "title": "Review PSS Violation Events", "text": "step4.md", "verify": "step4-verify.sh" }
+    ],
+    "finish": { "text": "finish.md" }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-2nodes"
+  }
+}

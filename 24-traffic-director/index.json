@@ -1,0 +1,16 @@
+{
+  "title": "The Traffic Director",
+  "description": "Route traffic to multiple backends using Ingress path rules",
+  "details": {
+    "intro": { "text": "intro.md" },
+    "steps": [
+      { "title": "Deploy Multiple Backend Services", "text": "step1.md", "verify": "step1-verify.sh" },
+      { "title": "Create Path-Based Ingress Rules", "text": "step2.md", "verify": "step2-verify.sh" },
+      { "title": "Test Ingress Routing", "text": "step3.md", "verify": "step3-verify.sh" }
+    ],
+    "finish": { "text": "finish.md" }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-2nodes"
+  }
+}

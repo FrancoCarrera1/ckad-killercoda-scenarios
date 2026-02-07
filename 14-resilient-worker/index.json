@@ -1,0 +1,16 @@
+{
+  "title": "The Resilient Worker",
+  "description": "Build fault-tolerant batch processing with Indexed Jobs and automatic cleanup",
+  "details": {
+    "intro": { "text": "intro.md" },
+    "steps": [
+      { "title": "Create Indexed Job for Parallel Processing", "text": "step1.md", "verify": "step1-verify.sh" },
+      { "title": "Build Job with Retry Logic", "text": "step2.md", "verify": "step2-verify.sh" },
+      { "title": "Create CronJob Pipeline with ConfigMap", "text": "step3.md", "verify": "step3-verify.sh" }
+    ],
+    "finish": { "text": "finish.md" }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-2nodes"
+  }
+}
