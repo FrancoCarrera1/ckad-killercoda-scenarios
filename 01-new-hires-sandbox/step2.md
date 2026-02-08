@@ -6,7 +6,7 @@ Configure resource controls to prevent Angelica's namespace from consuming exces
 
 ### Requirements
 
-1. Create a ResourceQuota named `dev-quota` in the `dev-angelica` namespace with:
+1. Create a ResourceQuota named `dev-quota` in the `dev-angelica` namespace with hard limits on requests:
    - `requests.cpu: 2`
    - `requests.memory: 2Gi`
    - `pods: 10`
@@ -89,14 +89,4 @@ kubectl get resourcequota dev-quota -n dev-angelica
 kubectl describe resourcequota dev-quota -n dev-angelica
 kubectl get limitrange dev-limits -n dev-angelica
 kubectl describe limitrange dev-limits -n dev-angelica
-```
-
-</details>
-
-## Verification
-
-Run the verification script to check your work:
-
-```bash
-/usr/local/bin/step2-verify.sh
 ```

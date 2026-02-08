@@ -63,13 +63,3 @@ kubectl create namespace dev-angelica --dry-run=client -o yaml | \
   kubectl label --local -f - team=frontend env=dev --dry-run=client -o yaml | \
   kubectl apply -f -
 ```
-
-</details>
-
-## Verification
-
-Run the verification script to check your work:
-
-```bash
-/usr/local/bin/step1-verify.sh
-```
