@@ -1,6 +1,6 @@
 # Congratulations!
 
-You've successfully created a production-ready development sandbox for Priya with all the necessary resource controls.
+You've successfully created a production-ready development sandbox for Angelica with all the necessary resource controls.
 
 ## What You Learned
 
@@ -31,6 +31,7 @@ In this scenario, you mastered:
 ### Time-Saving Techniques
 
 1. **Use imperative commands when possible**
+
    ```bash
    kubectl create namespace <name>
    kubectl create quota <name> --hard=<limits>
@@ -57,12 +58,14 @@ In this scenario, you mastered:
 ### Exam Relevance
 
 This scenario covers concepts that appear in:
+
 - **Application Environment, Configuration and Security (25%)**: Resource limits, quotas, ServiceAccounts
 - **Core Concepts (13%)**: Namespaces, labels
 
 ## Next Steps
 
 Now that you understand resource controls, you're ready to tackle:
+
 - ConfigMaps and Secrets for application configuration
 - SecurityContext for pod-level security
 - Network Policies for traffic control

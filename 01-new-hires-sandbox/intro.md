@@ -4,9 +4,10 @@ Welcome to your first day as a Kubernetes cluster administrator!
 
 ## Scenario
 
-Priya just joined the frontend team at your company. Your job as cluster admin is to create her isolated development environment with proper resource controls so she can't accidentally consume all cluster resources.
+Angelica just joined the frontend team at your company. Your job as cluster admin is to create her isolated development environment with proper resource controls so she can't accidentally consume all cluster resources.
 
 This is a common real-world task that ensures:
+
 - Developers have isolated workspaces (namespaces)
 - They can't monopolize cluster resources (ResourceQuotas)
 - Their pods get sensible defaults (LimitRanges)
@@ -15,6 +16,7 @@ This is a common real-world task that ensures:
 ## Learning Objectives
 
 By the end of this scenario, you will be able to:
+
 - Create namespaces with labels for organization
 - Create ServiceAccounts for pod identity
 - Configure ResourceQuotas to limit namespace resource consumption

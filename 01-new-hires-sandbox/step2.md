@@ -2,7 +2,7 @@
 
 ## Task
 
-Configure resource controls to prevent Priya's namespace from consuming excessive cluster resources.
+Configure resource controls to prevent Angelica's namespace from consuming excessive cluster resources.
 
 ### Requirements
 
@@ -26,6 +26,7 @@ Configure resource controls to prevent Priya's namespace from consuming excessiv
 You can use `kubectl create quota` or write a YAML manifest.
 
 Imperative approach:
+
 ```bash
 kubectl create quota <name> \
   --hard=requests.cpu=2,requests.memory=2Gi,pods=10 \
@@ -37,6 +38,7 @@ kubectl create quota <name> \
 <details><summary>Hint 2: Creating a LimitRange</summary>
 
 LimitRange requires a YAML manifest. The structure is:
+
 ```yaml
 apiVersion: v1
 kind: LimitRange
@@ -45,13 +47,13 @@ metadata:
   namespace: dev-priya
 spec:
   limits:
-  - default:  # default limits
-      cpu: 250m
-      memory: 256Mi
-    defaultRequest:  # default requests
-      cpu: 100m
-      memory: 128Mi
-    type: Container
+    - default: # default limits
+        cpu: 250m
+        memory: 256Mi
+      defaultRequest: # default requests
+        cpu: 100m
+        memory: 128Mi
+      type: Container
 ```
 
 </details>
@@ -94,6 +96,7 @@ kubectl describe limitrange dev-limits -n dev-priya
 ## Verification
 
 Run the verification script to check your work:
+
 ```bash
 /usr/local/bin/step2-verify.sh
 ```

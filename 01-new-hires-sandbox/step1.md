@@ -2,7 +2,7 @@
 
 ## Task
 
-Create a dedicated namespace for Priya with proper labels and a ServiceAccount for her workloads.
+Create a dedicated namespace for Angelica with proper labels and a ServiceAccount for her workloads.
 
 ### Requirements
 
@@ -23,6 +23,7 @@ Create a dedicated namespace for Priya with proper labels and a ServiceAccount f
 Use `kubectl create namespace` followed by `kubectl label` to add labels, or create a YAML manifest with labels included.
 
 The imperative approach:
+
 ```bash
 kubectl create namespace <name>
 kubectl label namespace <name> key=value
@@ -56,6 +57,7 @@ kubectl get serviceaccount priya-sa -n dev-priya
 ```
 
 Alternative single-command approach for namespace:
+
 ```bash
 kubectl create namespace dev-priya --dry-run=client -o yaml | \
   kubectl label --local -f - team=frontend env=dev --dry-run=client -o yaml | \
@@ -67,6 +69,7 @@ kubectl create namespace dev-priya --dry-run=client -o yaml | \
 ## Verification
 
 Run the verification script to check your work:
+
 ```bash
 /usr/local/bin/step1-verify.sh
 ```
