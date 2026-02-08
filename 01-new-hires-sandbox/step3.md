@@ -81,10 +81,3 @@ kubectl describe resourcequota dev-quota -n dev-angelica
 ```
 
 </details>
-
-## Verification
-
-Run the verification script to check your work:
-```bash
-/usr/local/bin/step3-verify.sh
-```
