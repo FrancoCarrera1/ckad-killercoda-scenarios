@@ -6,11 +6,11 @@ Create a dedicated namespace for Angelica with proper labels and a ServiceAccoun
 
 ### Requirements
 
-1. Create a namespace named `dev-priya` with the following labels:
+1. Create a namespace named `dev-angelica` with the following labels:
    - `team=frontend`
    - `env=dev`
 
-2. Create a ServiceAccount named `priya-sa` in the `dev-priya` namespace
+2. Create a ServiceAccount named `angelica-sa` in the `dev-angelica` namespace
 
 ## Why This Matters
 
@@ -45,21 +45,21 @@ kubectl create serviceaccount <name> -n <namespace>
 
 ```bash
 # Create the namespace with labels
-kubectl create namespace dev-priya
-kubectl label namespace dev-priya team=frontend env=dev
+kubectl create namespace dev-angelica
+kubectl label namespace dev-angelica team=frontend env=dev
 
 # Create the ServiceAccount
-kubectl create serviceaccount priya-sa -n dev-priya
+kubectl create serviceaccount angelica-sa -n dev-angelica
 
 # Verify your work
-kubectl get namespace dev-priya --show-labels
-kubectl get serviceaccount priya-sa -n dev-priya
+kubectl get namespace dev-angelica --show-labels
+kubectl get serviceaccount angelica-sa -n dev-angelica
 ```
 
 Alternative single-command approach for namespace:
 
 ```bash
-kubectl create namespace dev-priya --dry-run=client -o yaml | \
+kubectl create namespace dev-angelica --dry-run=client -o yaml | \
   kubectl label --local -f - team=frontend env=dev --dry-run=client -o yaml | \
   kubectl apply -f -
 ```

@@ -6,12 +6,12 @@ Configure resource controls to prevent Angelica's namespace from consuming exces
 
 ### Requirements
 
-1. Create a ResourceQuota named `dev-quota` in the `dev-priya` namespace with:
+1. Create a ResourceQuota named `dev-quota` in the `dev-angelica` namespace with:
    - `requests.cpu: 2`
    - `requests.memory: 2Gi`
    - `pods: 10`
 
-2. Create a LimitRange named `dev-limits` in the `dev-priya` namespace with:
+2. Create a LimitRange named `dev-limits` in the `dev-angelica` namespace with:
    - **Default limits**: `cpu: 250m`, `memory: 256Mi`
    - **Default requests**: `cpu: 100m`, `memory: 128Mi`
 
@@ -44,7 +44,7 @@ apiVersion: v1
 kind: LimitRange
 metadata:
   name: dev-limits
-  namespace: dev-priya
+  namespace: dev-angelica
 spec:
   limits:
     - default: # default limits
@@ -64,7 +64,7 @@ spec:
 # Create ResourceQuota
 kubectl create quota dev-quota \
   --hard=requests.cpu=2,requests.memory=2Gi,pods=10 \
-  -n dev-priya
+  -n dev-angelica
 
 # Create LimitRange (requires YAML)
 cat <<EOF | kubectl apply -f -
@@ -72,7 +72,7 @@ apiVersion: v1
 kind: LimitRange
 metadata:
   name: dev-limits
-  namespace: dev-priya
+  namespace: dev-angelica
 spec:
   limits:
   - default:
@@ -85,10 +85,10 @@ spec:
 EOF
 
 # Verify your work
-kubectl get resourcequota dev-quota -n dev-priya
-kubectl describe resourcequota dev-quota -n dev-priya
-kubectl get limitrange dev-limits -n dev-priya
-kubectl describe limitrange dev-limits -n dev-priya
+kubectl get resourcequota dev-quota -n dev-angelica
+kubectl describe resourcequota dev-quota -n dev-angelica
+kubectl get limitrange dev-limits -n dev-angelica
+kubectl describe limitrange dev-limits -n dev-angelica
 ```
 
 </details>

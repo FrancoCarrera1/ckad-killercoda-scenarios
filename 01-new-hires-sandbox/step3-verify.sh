@@ -2,29 +2,29 @@
 set -euo pipefail
 
 # Check if nginx-test pod exists and is running
-if ! kubectl get pod nginx-test -n dev-priya &>/dev/null; then
-  echo "❌ Pod 'nginx-test' does not exist in namespace 'dev-priya'"
+if ! kubectl get pod nginx-test -n dev-angelica &>/dev/null; then
+  echo "❌ Pod 'nginx-test' does not exist in namespace 'dev-angelica'"
   exit 1
 fi
 
-POD_STATUS=$(kubectl get pod nginx-test -n dev-priya -o jsonpath='{.status.phase}')
+POD_STATUS=$(kubectl get pod nginx-test -n dev-angelica -o jsonpath='{.status.phase}')
 if [[ "$POD_STATUS" != "Running" ]]; then
   echo "❌ Pod 'nginx-test' is not running (status: $POD_STATUS)"
   exit 1
 fi
 
 # Check if pod uses the correct ServiceAccount
-SA_NAME=$(kubectl get pod nginx-test -n dev-priya -o jsonpath='{.spec.serviceAccountName}')
-if [[ "$SA_NAME" != "priya-sa" ]]; then
-  echo "❌ Pod 'nginx-test' does not use ServiceAccount 'priya-sa' (found: $SA_NAME)"
+SA_NAME=$(kubectl get pod nginx-test -n dev-angelica -o jsonpath='{.spec.serviceAccountName}')
+if [[ "$SA_NAME" != "angelica-sa" ]]; then
+  echo "❌ Pod 'nginx-test' does not use ServiceAccount 'angelica-sa' (found: $SA_NAME)"
   exit 1
 fi
 
 # Check if LimitRange defaults were injected
-LIMIT_CPU=$(kubectl get pod nginx-test -n dev-priya -o jsonpath='{.spec.containers[0].resources.limits.cpu}')
-LIMIT_MEM=$(kubectl get pod nginx-test -n dev-priya -o jsonpath='{.spec.containers[0].resources.limits.memory}')
-REQUEST_CPU=$(kubectl get pod nginx-test -n dev-priya -o jsonpath='{.spec.containers[0].resources.requests.cpu}')
-REQUEST_MEM=$(kubectl get pod nginx-test -n dev-priya -o jsonpath='{.spec.containers[0].resources.requests.memory}')
+LIMIT_CPU=$(kubectl get pod nginx-test -n dev-angelica -o jsonpath='{.spec.containers[0].resources.limits.cpu}')
+LIMIT_MEM=$(kubectl get pod nginx-test -n dev-angelica -o jsonpath='{.spec.containers[0].resources.limits.memory}')
+REQUEST_CPU=$(kubectl get pod nginx-test -n dev-angelica -o jsonpath='{.spec.containers[0].resources.requests.cpu}')
+REQUEST_MEM=$(kubectl get pod nginx-test -n dev-angelica -o jsonpath='{.spec.containers[0].resources.requests.memory}')
 
 if [[ "$LIMIT_CPU" != "250m" ]]; then
   echo "❌ Pod 'nginx-test' does not have correct CPU limit (expected: 250m, found: $LIMIT_CPU)"

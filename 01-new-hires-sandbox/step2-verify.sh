@@ -2,15 +2,15 @@
 set -euo pipefail
 
 # Check if ResourceQuota exists
-if ! kubectl get resourcequota dev-quota -n dev-priya &>/dev/null; then
-  echo "❌ ResourceQuota 'dev-quota' does not exist in namespace 'dev-priya'"
+if ! kubectl get resourcequota dev-quota -n dev-angelica &>/dev/null; then
+  echo "❌ ResourceQuota 'dev-quota' does not exist in namespace 'dev-angelica'"
   exit 1
 fi
 
 # Check ResourceQuota values
-CPU_QUOTA=$(kubectl get resourcequota dev-quota -n dev-priya -o jsonpath='{.spec.hard.requests\.cpu}')
-MEMORY_QUOTA=$(kubectl get resourcequota dev-quota -n dev-priya -o jsonpath='{.spec.hard.requests\.memory}')
-PODS_QUOTA=$(kubectl get resourcequota dev-quota -n dev-priya -o jsonpath='{.spec.hard.pods}')
+CPU_QUOTA=$(kubectl get resourcequota dev-quota -n dev-angelica -o jsonpath='{.spec.hard.requests\.cpu}')
+MEMORY_QUOTA=$(kubectl get resourcequota dev-quota -n dev-angelica -o jsonpath='{.spec.hard.requests\.memory}')
+PODS_QUOTA=$(kubectl get resourcequota dev-quota -n dev-angelica -o jsonpath='{.spec.hard.pods}')
 
 if [[ "$CPU_QUOTA" != "2" ]]; then
   echo "❌ ResourceQuota 'dev-quota' has incorrect requests.cpu (expected: 2, found: $CPU_QUOTA)"
@@ -28,16 +28,16 @@ if [[ "$PODS_QUOTA" != "10" ]]; then
 fi
 
 # Check if LimitRange exists
-if ! kubectl get limitrange dev-limits -n dev-priya &>/dev/null; then
-  echo "❌ LimitRange 'dev-limits' does not exist in namespace 'dev-priya'"
+if ! kubectl get limitrange dev-limits -n dev-angelica &>/dev/null; then
+  echo "❌ LimitRange 'dev-limits' does not exist in namespace 'dev-angelica'"
   exit 1
 fi
 
 # Check LimitRange values
-DEFAULT_CPU=$(kubectl get limitrange dev-limits -n dev-priya -o jsonpath='{.spec.limits[0].default.cpu}')
-DEFAULT_MEM=$(kubectl get limitrange dev-limits -n dev-priya -o jsonpath='{.spec.limits[0].default.memory}')
-REQUEST_CPU=$(kubectl get limitrange dev-limits -n dev-priya -o jsonpath='{.spec.limits[0].defaultRequest.cpu}')
-REQUEST_MEM=$(kubectl get limitrange dev-limits -n dev-priya -o jsonpath='{.spec.limits[0].defaultRequest.memory}')
+DEFAULT_CPU=$(kubectl get limitrange dev-limits -n dev-angelica -o jsonpath='{.spec.limits[0].default.cpu}')
+DEFAULT_MEM=$(kubectl get limitrange dev-limits -n dev-angelica -o jsonpath='{.spec.limits[0].default.memory}')
+REQUEST_CPU=$(kubectl get limitrange dev-limits -n dev-angelica -o jsonpath='{.spec.limits[0].defaultRequest.cpu}')
+REQUEST_MEM=$(kubectl get limitrange dev-limits -n dev-angelica -o jsonpath='{.spec.limits[0].defaultRequest.memory}')
 
 if [[ "$DEFAULT_CPU" != "250m" ]]; then
   echo "❌ LimitRange 'dev-limits' has incorrect default cpu (expected: 250m, found: $DEFAULT_CPU)"

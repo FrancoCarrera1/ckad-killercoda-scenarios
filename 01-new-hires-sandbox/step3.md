@@ -6,9 +6,9 @@ Deploy a test pod to verify that the LimitRange is automatically injecting defau
 
 ### Requirements
 
-1. Create a pod named `nginx-test` in the `dev-priya` namespace:
+1. Create a pod named `nginx-test` in the `dev-angelica` namespace:
    - Image: `nginx:1.24`
-   - ServiceAccount: `priya-sa`
+   - ServiceAccount: `angelica-sa`
    - Do NOT specify resource requests/limits (let LimitRange inject them)
 
 2. Verify that the pod is running and has the default limits/requests from the LimitRange
@@ -27,8 +27,8 @@ This demonstrates the **defense in depth** approach:
 Use `kubectl run` with the `--serviceaccount` flag:
 ```bash
 kubectl run nginx-test --image=nginx:1.24 \
-  --serviceaccount=priya-sa \
-  -n dev-priya
+  --serviceaccount=angelica-sa \
+  -n dev-angelica
 ```
 
 Wait for it to be running, then inspect its resource settings with `kubectl describe` or `kubectl get pod -o yaml`.
@@ -37,7 +37,7 @@ Wait for it to be running, then inspect its resource settings with `kubectl desc
 
 <details><summary>Hint 2: Verifying default injection</summary>
 
-Use `kubectl describe pod nginx-test -n dev-priya` and look at the "Limits" and "Requests" sections. They should match the LimitRange defaults (250m CPU / 256Mi memory for limits, 100m CPU / 128Mi memory for requests).
+Use `kubectl describe pod nginx-test -n dev-angelica` and look at the "Limits" and "Requests" sections. They should match the LimitRange defaults (250m CPU / 256Mi memory for limits, 100m CPU / 128Mi memory for requests).
 
 </details>
 
@@ -45,7 +45,7 @@ Use `kubectl describe pod nginx-test -n dev-priya` and look at the "Limits" and 
 
 Try to create a pod that requests more CPU than the quota allows:
 ```bash
-kubectl run greedy-pod --image=nginx:1.24 -n dev-priya \
+kubectl run greedy-pod --image=nginx:1.24 -n dev-angelica \
   --requests=cpu=4
 ```
 
@@ -58,26 +58,26 @@ This should fail with a quota exceeded error.
 ```bash
 # Create nginx-test pod with the ServiceAccount
 kubectl run nginx-test --image=nginx:1.24 \
-  --serviceaccount=priya-sa \
-  -n dev-priya
+  --serviceaccount=angelica-sa \
+  -n dev-angelica
 
 # Wait for pod to be running
-kubectl wait --for=condition=Ready pod/nginx-test -n dev-priya --timeout=60s
+kubectl wait --for=condition=Ready pod/nginx-test -n dev-angelica --timeout=60s
 
 # Verify LimitRange defaults were injected
-kubectl describe pod nginx-test -n dev-priya | grep -A 4 "Limits:"
-kubectl get pod nginx-test -n dev-priya -o jsonpath='{.spec.containers[0].resources}'
+kubectl describe pod nginx-test -n dev-angelica | grep -A 4 "Limits:"
+kubectl get pod nginx-test -n dev-angelica -o jsonpath='{.spec.containers[0].resources}'
 
 # You should see:
 # Limits: cpu=250m, memory=256Mi
 # Requests: cpu=100m, memory=128Mi
 
 # Try to create a greedy pod (this should fail)
-kubectl run greedy-pod --image=nginx:1.24 -n dev-priya \
+kubectl run greedy-pod --image=nginx:1.24 -n dev-angelica \
   --requests=cpu=4 || echo "✅ Quota correctly prevented greedy pod!"
 
 # Check the quota usage
-kubectl describe resourcequota dev-quota -n dev-priya
+kubectl describe resourcequota dev-quota -n dev-angelica
 ```
 
 </details>
