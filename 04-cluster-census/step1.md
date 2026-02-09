@@ -59,10 +59,3 @@ kubectl get ns > /root/namespaces.txt
 ```
 
 </details>
-
-## Verification
-
-Run the verification script to check your work:
-```bash
-/usr/local/bin/step1-verify.sh
-```

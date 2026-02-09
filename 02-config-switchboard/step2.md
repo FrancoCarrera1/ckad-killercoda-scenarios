@@ -92,10 +92,3 @@ FEATURE_DARK_MODE=true
 ```
 
 </details>
-
-## Verification
-
-Run the verification script to check your work:
-```bash
-/usr/local/bin/step2-verify.sh
-```

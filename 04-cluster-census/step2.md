@@ -75,10 +75,3 @@ cat /root/system-pods.txt
 - `.status.phase` - by status (Pending, Running, etc.)
 
 </details>
-
-## Verification
-
-Run the verification script to check your work:
-```bash
-/usr/local/bin/step2-verify.sh
-```

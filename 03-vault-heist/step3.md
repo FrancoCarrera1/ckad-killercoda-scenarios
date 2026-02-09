@@ -103,11 +103,4 @@ All checks should pass:
 
 </details>
 
-## Verification
-
-Run the verification script to check your work:
-```bash
-/usr/local/bin/step3-verify.sh
-```
-
 After passing, congratulations! You've mastered Kubernetes secrets and security contexts!

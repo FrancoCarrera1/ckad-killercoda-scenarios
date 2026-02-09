@@ -134,10 +134,3 @@ kubectl get pod secure-app -n vault -o jsonpath='{.spec.containers[0].securityCo
 ```
 
 </details>
-
-## Verification
-
-Run the verification script to check your work:
-```bash
-/usr/local/bin/step2-verify.sh
-```
