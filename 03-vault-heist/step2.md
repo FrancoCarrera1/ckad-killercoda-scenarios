@@ -14,7 +14,7 @@ Create a pod named `secure-app` in the `vault` namespace with the following conf
 
 2. **Secret Mounting**:
    - Mount `app-credentials` secret as a volume at `/etc/secrets/app`
-   - Set volume mount `defaultMode` to `0400` (read-only for owner)
+   - Set volume mount to `readOnly: true`
 
 3. **Environment Variables**:
    - Set env var `DB_USER` from secret `app-credentials`, key `username`
@@ -23,18 +23,14 @@ Create a pod named `secure-app` in the `vault` namespace with the following conf
 4. **Image Pull Secret**:
    - Use `registry-creds` as imagePullSecret
 
-5. **Security Context** (container-level):
-   - `runAsNonRoot: true`
-   - `runAsUser: 1000`
-   - `runAsGroup: 1000`
-
 ## Why This Matters
 
-This demonstrates **defense in depth**:
-- Secrets mounted with restrictive permissions (0400 = read-only for owner)
-- Container runs as non-root user (UID 1000)
-- ImagePullSecrets allow pulling from private registries
-- Multiple ways to inject secrets (volumes vs env vars) based on use case
+This demonstrates two key approaches to working with secrets:
+- **Volume mounts**: Best for file-based secrets (certificates, config files)
+- **Environment variables**: Best for simple key-value pairs (credentials, API tokens)
+- **ImagePullSecrets**: Special secret type for authenticating to private registries
+
+Understanding when to use each method is critical for the CKAD exam!
 
 <details><summary>Hint 1: Pod structure with secrets</summary>
 
@@ -43,28 +39,10 @@ You need:
 2. `volumes` section referencing the secret
 3. `volumeMounts` in the container
 4. `env` with `valueFrom.secretKeyRef` for environment variables
-5. `securityContext` at container level
 
 </details>
 
-<details><summary>Hint 2: Volume mount with defaultMode</summary>
-
-```yaml
-volumeMounts:
-- name: secret-volume
-  mountPath: /etc/secrets/app
-volumes:
-- name: secret-volume
-  secret:
-    secretName: app-credentials
-    defaultMode: 0400
-```
-
-Note: `defaultMode` is in **octal** (base 8), so 0400 in YAML.
-
-</details>
-
-<details><summary>Hint 3: Environment variables from secret</summary>
+<details><summary>Hint 2: Environment variables from secret</summary>
 
 ```yaml
 env:
@@ -112,15 +90,10 @@ spec:
     - name: secret-volume
       mountPath: /etc/secrets/app
       readOnly: true
-    securityContext:
-      runAsNonRoot: true
-      runAsUser: 1000
-      runAsGroup: 1000
   volumes:
   - name: secret-volume
     secret:
       secretName: app-credentials
-      defaultMode: 0400
 EOF
 
 # Wait for pod to be ready
@@ -128,9 +101,6 @@ kubectl wait --for=condition=Ready pod/secure-app -n vault --timeout=60s
 
 # Verify the pod is running
 kubectl get pod secure-app -n vault
-
-# Check the security context
-kubectl get pod secure-app -n vault -o jsonpath='{.spec.containers[0].securityContext}'
 ```
 
 </details>

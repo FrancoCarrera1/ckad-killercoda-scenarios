@@ -24,24 +24,16 @@ if ! kubectl exec secure-app -n vault -- test -f /etc/secrets/app/username 2>/de
   exit 1
 fi
 
-# Check file permissions (should be 0400 = -r--------)
-FILE_PERMS=$(kubectl exec secure-app -n vault -- stat -c '%a' /etc/secrets/app/username 2>/dev/null || echo "")
-if [[ "$FILE_PERMS" != "400" ]]; then
-  echo "❌ File /etc/secrets/app/username has incorrect permissions (expected: 400, found: $FILE_PERMS)"
+# Verify file content
+USERNAME_CONTENT=$(kubectl exec secure-app -n vault -- cat /etc/secrets/app/username 2>/dev/null || echo "")
+if [[ "$USERNAME_CONTENT" != "admin" ]]; then
+  echo "❌ File /etc/secrets/app/username has incorrect content (expected: admin, found: $USERNAME_CONTENT)"
   exit 1
 fi
 
-# Check process is running as UID 1000
-PROCESS_UID=$(kubectl exec secure-app -n vault -- id -u 2>/dev/null || echo "")
-if [[ "$PROCESS_UID" != "1000" ]]; then
-  echo "❌ Process is not running as UID 1000 (found: $PROCESS_UID)"
-  exit 1
-fi
-
-echo "✅ Step 3 complete! All security configurations verified successfully."
+echo "✅ Step 3 complete! All secret configurations verified successfully."
 echo ""
 echo "Summary:"
-echo "  ✓ File permissions: 0400 (read-only for owner)"
 echo "  ✓ Environment variables: DB_USER and DB_PASS set correctly"
-echo "  ✓ Process UID: 1000 (non-root)"
+echo "  ✓ Secret files mounted and accessible at /etc/secrets/app/"
 exit 0

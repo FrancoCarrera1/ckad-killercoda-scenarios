@@ -4,13 +4,12 @@ Welcome to the world of Kubernetes secret management and security!
 
 ## Scenario
 
-The security team needs you to demonstrate mastery of all Secret types and proper security practices. You'll create secrets for different purposes (credentials, TLS certificates, container registry access), mount them securely with proper permissions, and run everything under the principle of least privilege using SecurityContext.
+The security team needs you to demonstrate mastery of all Secret types. You'll create secrets for different purposes (credentials, TLS certificates, container registry access) and use them in pods through different injection methods.
 
 This scenario simulates real-world requirements for:
 - Managing sensitive data (passwords, API keys, certificates)
 - Securing container registry access for private images
-- Running containers as non-root users
-- Setting proper file permissions on mounted secrets
+- Understanding when to use volume mounts vs environment variables
 
 ## Learning Objectives
 
@@ -18,9 +17,8 @@ By the end of this scenario, you will be able to:
 - Create generic secrets from literal values
 - Create TLS secrets from certificate files
 - Create docker-registry secrets for private registries
-- Mount secrets as volumes with custom file permissions
+- Mount secrets as volumes
 - Inject secrets as environment variables
-- Configure SecurityContext (runAsUser, runAsGroup, runAsNonRoot)
 - Use imagePullSecrets for private registries
 
 ## CKAD Exam Relevance

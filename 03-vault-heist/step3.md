@@ -1,37 +1,26 @@
-# Step 3: Verify Security Configuration
+# Step 3: Verify Secret Configuration
 
 ## Task
 
-Exec into the running pod and verify that all security configurations are correctly applied.
+Exec into the running pod and verify that all secrets are correctly configured.
 
 ### Verification Tasks
 
-1. Verify the file permissions of `/etc/secrets/app/username` are `0400` (read-only for owner)
-2. Verify environment variables `DB_USER` and `DB_PASS` are set correctly
-3. Verify the process is running as UID 1000 (non-root)
+1. Verify environment variables `DB_USER` and `DB_PASS` are set correctly
+2. Verify secret files exist at `/etc/secrets/app/` and contain the correct values
+3. Verify imagePullSecrets is configured on the pod
 
 ## Why This Matters
 
 The CKAD exam often requires you to:
 - Exec into pods to troubleshoot
-- Verify file permissions on mounted volumes
-- Check which user is running the container process
-- Validate environment variables
+- Verify environment variables are set correctly
+- Check that volume-mounted secrets are accessible
+- Inspect pod configuration to validate imagePullSecrets
 
-This step teaches you how to verify your security configuration is actually applied!
+This step teaches you how to verify your secret configuration is actually working!
 
-<details><summary>Hint 1: Checking file permissions</summary>
-
-Use `ls -la` to see file permissions:
-```bash
-kubectl exec secure-app -n vault -- ls -la /etc/secrets/app/
-```
-
-File permission `0400` appears as `-r--------` (read-only for owner, no access for group/others).
-
-</details>
-
-<details><summary>Hint 2: Checking environment variables</summary>
+<details><summary>Hint 1: Checking environment variables</summary>
 
 Print environment variables:
 ```bash
@@ -46,12 +35,31 @@ kubectl exec secure-app -n vault -- sh -c 'echo $DB_PASS'
 
 </details>
 
-<details><summary>Hint 3: Checking process UID</summary>
+<details><summary>Hint 2: Checking mounted secret files</summary>
 
-Check what user the nginx process is running as:
+List files in the mounted secret directory:
 ```bash
-kubectl exec secure-app -n vault -- ps aux
-kubectl exec secure-app -n vault -- id
+kubectl exec secure-app -n vault -- ls /etc/secrets/app/
+```
+
+Read the secret files:
+```bash
+kubectl exec secure-app -n vault -- cat /etc/secrets/app/username
+kubectl exec secure-app -n vault -- cat /etc/secrets/app/password
+```
+
+</details>
+
+<details><summary>Hint 3: Checking imagePullSecrets</summary>
+
+Describe the pod to see imagePullSecrets:
+```bash
+kubectl describe pod secure-app -n vault | grep -A2 "Image Pull Secrets"
+```
+
+Or use jsonpath:
+```bash
+kubectl get pod secure-app -n vault -o jsonpath='{.spec.imagePullSecrets[0].name}'
 ```
 
 </details>
@@ -59,48 +67,37 @@ kubectl exec secure-app -n vault -- id
 <details><summary>Solution</summary>
 
 ```bash
-# Check file permissions of mounted secret
-echo "=== File Permissions ==="
-kubectl exec secure-app -n vault -- ls -la /etc/secrets/app/
-
-# You should see:
-# -r-------- 1 1000 1000  5 ... username
-# -r-------- 1 1000 1000 12 ... password
-
-# Check specific file
-kubectl exec secure-app -n vault -- ls -l /etc/secrets/app/username
-
-# Read the secret files
-echo -e "\n=== Secret File Contents ==="
-kubectl exec secure-app -n vault -- cat /etc/secrets/app/username
-kubectl exec secure-app -n vault -- cat /etc/secrets/app/password
-
 # Check environment variables
-echo -e "\n=== Environment Variables ==="
+echo "=== Environment Variables ==="
 kubectl exec secure-app -n vault -- env | grep DB_
 
 # Or with echo
 kubectl exec secure-app -n vault -- sh -c 'echo "DB_USER=$DB_USER"'
 kubectl exec secure-app -n vault -- sh -c 'echo "DB_PASS=$DB_PASS"'
 
-# Check process user ID
-echo -e "\n=== Process User ID ==="
-kubectl exec secure-app -n vault -- id
+# List secret files in mounted volume
+echo -e "\n=== Secret Files ==="
+kubectl exec secure-app -n vault -- ls /etc/secrets/app/
 
-# Expected output:
-# uid=1000 gid=1000 groups=1000
+# Read the secret files
+echo -e "\n=== Secret File Contents ==="
+kubectl exec secure-app -n vault -- cat /etc/secrets/app/username
+kubectl exec secure-app -n vault -- cat /etc/secrets/app/password
 
-# Check nginx process
-kubectl exec secure-app -n vault -- ps aux
+# Verify imagePullSecrets
+echo -e "\n=== ImagePullSecrets ==="
+kubectl describe pod secure-app -n vault | grep -A2 "Image Pull Secrets"
 
-# Verify nginx is running as UID 1000 (not root)
+# Or use jsonpath
+kubectl get pod secure-app -n vault -o jsonpath='{.spec.imagePullSecrets[0].name}'
+echo ""
 ```
 
 All checks should pass:
-- Files have `-r--------` permissions (0400)
 - `DB_USER=admin` and `DB_PASS=S3cur3P@ss!`
-- Process runs as `uid=1000`
+- Files `/etc/secrets/app/username` and `/etc/secrets/app/password` exist and contain correct values
+- imagePullSecret `registry-creds` is configured
 
 </details>
 
-After passing, congratulations! You've mastered Kubernetes secrets and security contexts!
+After passing, congratulations! You've mastered Kubernetes secret management!
