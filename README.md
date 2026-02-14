@@ -71,34 +71,6 @@
 | Medium | 13 |
 | Hard | 10 |
 
-## Scenario Structure
-
-Each scenario follows the same file layout:
-
-```
-scenario-name/
-  index.json           # Title, description, backend config, step definitions
-  intro.md             # Narrative context and learning objectives
-  setup.sh             # Pre-creates namespaces, broken resources, etc.
-  step1.md             # Task instructions (includes hints + solutions)
-  step1-verify.sh      # Automated validation (exit 0 = pass, exit 1 = fail)
-  step2.md / step2-verify.sh
-  step3.md / step3-verify.sh
-  finish.md            # Summary and exam tips
-```
-
-- **intro.md** sets the scene with a real-world narrative
-- **stepN.md** files contain the task, hints in collapsible `<details>` blocks, and a full solution
-- **stepN-verify.sh** scripts automatically check your work (pass/fail)
-- **finish.md** recaps what you learned and gives CKAD exam tips
-
-## How to Use
-
-### On Killercoda
-
-1. Push this repo to GitHub
-2. Link the repo to your [Killercoda Creator](https://killercoda.com/creator) account
-3. Scenarios will appear automatically based on `structure.json`
 
 ### Suggested Study Path
 
