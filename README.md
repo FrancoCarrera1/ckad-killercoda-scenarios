@@ -2,7 +2,6 @@
 
 33 hands-on interactive scenarios for **Certified Kubernetes Application Developer (CKAD)** exam preparation, built for [Killercoda](https://killercoda.com/).
 
-Each scenario runs on a live 2-node Kubernetes cluster (`kubernetes-kubeadm-2nodes`) and includes automated verification scripts so you get instant feedback as you work through the tasks.
 
 ## Scenarios
 
