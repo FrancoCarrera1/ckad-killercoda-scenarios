@@ -1,12 +1,11 @@
 {
   "title": "The Permission Maze",
-  "description": "Debug a broken RBAC chain with three hidden bugs",
+  "description": "Debug a broken RBAC chain with two hidden bugs",
   "details": {
     "intro": { "text": "intro.md", "background": "setup.sh" },
     "steps": [
       { "title": "Identify RBAC Bugs with auth can-i", "text": "step1.md", "verify": "step1-verify.sh" },
-      { "title": "Fix the RoleBinding Subject", "text": "step2.md", "verify": "step2-verify.sh" },
-      { "title": "Grant Pod Log Access", "text": "step3.md", "verify": "step3-verify.sh" }
+      { "title": "Fix the RoleBinding Subject", "text": "step2.md", "verify": "step2-verify.sh" }
     ],
     "finish": { "text": "finish.md" }
   },

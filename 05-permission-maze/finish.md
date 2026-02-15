@@ -12,7 +12,6 @@ You've successfully navigated the Permission Maze and debugged a complex RBAC co
 ### Common RBAC Pitfalls
 1. **Wrong API Groups**: Deployments are in `apps`, not `extensions`
 2. **Name Mismatches**: RoleBindings must reference the exact ServiceAccount name
-3. **Subresources**: Accessing pod logs requires explicit `pods/log` permissions
 
 ### Key Commands Used
 ```bash
